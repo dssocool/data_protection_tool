@@ -121,7 +121,7 @@
                     Background="#0B2D5C"
                     CornerRadius="8"
                     Padding="16,12">
-                <Grid ColumnDefinitions="2.6*,1.4*,1.4*,1.6*,1.1*,0.9*"
+                <Grid ColumnDefinitions="2.8*,1.5*,1.5*,1.7*,1.2*"
                       ColumnSpacing="16">
                     <TextBlock Grid.Column="0"
                                Text="Flow Name"
@@ -145,11 +145,6 @@
                                TextTrimming="CharacterEllipsis" />
                     <TextBlock Grid.Column="4"
                                Text="Status"
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis" />
-                    <TextBlock Grid.Column="5"
-                               Text="Action"
                                Foreground="White"
                                FontWeight="SemiBold"
                                TextTrimming="CharacterEllipsis" />
@@ -184,7 +179,7 @@
                                             PointerEntered="OnFlowRowPointerEntered"
                                             PointerExited="OnFlowRowPointerExited"
                                             PointerPressed="OnFlowRowPointerPressed">
-                                        <Grid ColumnDefinitions="2.6*,1.4*,1.4*,1.6*,1.1*,0.9*"
+                                        <Grid ColumnDefinitions="2.8*,1.5*,1.5*,1.7*,1.2*"
                                               ColumnSpacing="16">
                                             <TextBlock Grid.Column="0"
                                                        Text="{Binding FlowName}"
@@ -205,11 +200,6 @@
                                             <TextBlock Grid.Column="4"
                                                        Text="{Binding Status}"
                                                        Foreground="#21314A"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Grid.Column="5"
-                                                       Text="{Binding Action}"
-                                                       Foreground="#0B2D5C"
-                                                       FontWeight="SemiBold"
                                                        TextTrimming="CharacterEllipsis" />
                                         </Grid>
                                     </Border>
