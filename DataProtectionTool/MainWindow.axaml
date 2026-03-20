@@ -116,6 +116,7 @@
             </Grid>
 
             <Border Grid.Row="2"
+                    Margin="60,0"
                     Background="#0B2D5C"
                     CornerRadius="8"
                     Padding="16,12">
@@ -156,6 +157,7 @@
 
             <Grid x:Name="FlowListContainer"
                   Grid.Row="4"
+                  Margin="60,0"
                   PointerPressed="OnFlowListContainerPressed">
                 <Grid>
                     <TextBlock x:Name="EmptyStateText"
