@@ -83,9 +83,9 @@
                                 Classes="wizard-nav-icon-button"
                                 ToolTip.Tip="Flows"
                                 Click="OnFlowsNavClicked">
-                            <PathIcon Width="20"
-                                      Height="20"
-                                      Data="M5,7 H17 M17,7 L14,4 M17,7 L14,10 M19,17 H7 M7,17 L10,14 M7,17 L10,20" />
+                            <Image Width="20"
+                                   Height="20"
+                                   Source="{SvgImage /Assets/flow.svg}" />
                         </Button>
                     </StackPanel>
                 </Border>
@@ -293,9 +293,9 @@
                                 Classes="wizard-nav-icon-button selected"
                                 ToolTip.Tip="Flows"
                                 Click="OnFlowsNavClicked">
-                            <PathIcon Width="20"
-                                      Height="20"
-                                      Data="M5,7 H17 M17,7 L14,4 M17,7 L14,10 M19,17 H7 M7,17 L10,14 M7,17 L10,20" />
+                            <Image Width="20"
+                                   Height="20"
+                                   Source="{SvgImage /Assets/flow.svg}" />
                         </Button>
                         <Button x:Name="NavConnectionsButton"
                                 Classes="wizard-nav-icon-button"
