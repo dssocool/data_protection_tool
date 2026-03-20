@@ -6,91 +6,23 @@
              d:DesignWidth="760"
              d:DesignHeight="560"
              x:Class="DataProtectionTool.DataItemsWizard">
-    <Grid RowDefinitions="Auto,8,Auto,14,*,10,Auto">
-        <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="Data Items Wizard"
-                       FontSize="24"
-                       FontWeight="SemiBold"
-                       Foreground="#0B2D5C" />
-            <Button x:Name="TopActionButton"
-                    Grid.Column="1"
-                    Content="Next"
-                    Width="110"
-                    Height="36"
-                    Background="#0B2D5C"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    Click="OnTopActionButtonClicked" />
-        </Grid>
-
-        <TextBlock x:Name="StepDescriptionText"
-                   Grid.Row="2"
+    <StackPanel Spacing="14">
+        <TextBlock Text="Data Items Wizard"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   Foreground="#0B2D5C" />
+        <TextBlock Text="Scaffold mode: define data item catalog fields in upcoming steps."
                    Foreground="#4C6388"
-                   Text="Select one or more saved connections."
                    TextWrapping="Wrap" />
-
-        <Border Grid.Row="4"
-                BorderBrush="#D7E1EF"
+        <Border BorderBrush="#D7E1EF"
                 BorderThickness="1"
                 CornerRadius="10"
                 Background="White"
-                Padding="14">
-            <Grid>
-                <StackPanel x:Name="ConnectionSelectionPanel"
-                            Spacing="10">
-                    <CheckBox x:Name="SelectAllConnectionsCheckBox"
-                              Content="Select All Connections"
-                              IsThreeState="False"
-                              IsCheckedChanged="OnSelectAllConnectionsChanged" />
-
-                    <Border BorderBrush="#E3EBF6"
-                            BorderThickness="1"
-                            CornerRadius="8">
-                        <Grid RowDefinitions="Auto,*">
-                            <Border Background="#F3F7FD"
-                                    Padding="12,10">
-                                <Grid ColumnDefinitions="Auto,2.2*,1.3*,1.1*">
-                                    <TextBlock Text="Select"
-                                               FontWeight="SemiBold"
-                                               Foreground="#23446F" />
-                                    <TextBlock Grid.Column="1"
-                                               Margin="12,0,0,0"
-                                               Text="Connection"
-                                               FontWeight="SemiBold"
-                                               Foreground="#23446F" />
-                                    <TextBlock Grid.Column="2"
-                                               Margin="12,0,0,0"
-                                               Text="Type"
-                                               FontWeight="SemiBold"
-                                               Foreground="#23446F" />
-                                    <TextBlock Grid.Column="3"
-                                               Margin="12,0,0,0"
-                                               Text="Saved"
-                                               FontWeight="SemiBold"
-                                               Foreground="#23446F" />
-                                </Grid>
-                            </Border>
-
-                            <ScrollViewer Grid.Row="1"
-                                          MaxHeight="320"
-                                          VerticalScrollBarVisibility="Auto">
-                                <ItemsControl x:Name="ConnectionsItemsControl" />
-                            </ScrollViewer>
-                        </Grid>
-                    </Border>
-                </StackPanel>
-
-                <ScrollViewer x:Name="DataItemsPanel"
-                              IsVisible="False"
-                              VerticalScrollBarVisibility="Auto">
-                    <ItemsControl x:Name="ConnectionGroupsItemsControl" />
-                </ScrollViewer>
-            </Grid>
+                Padding="16">
+            <StackPanel Spacing="12">
+                <TextBox Height="38" Watermark="Item Name" />
+                <TextBox Height="38" Watermark="Classification" />
+            </StackPanel>
         </Border>
-
-        <TextBlock x:Name="StatusText"
-                   Grid.Row="6"
-                   Foreground="#4C6388"
-                   TextWrapping="Wrap" />
-    </Grid>
+    </StackPanel>
 </UserControl>

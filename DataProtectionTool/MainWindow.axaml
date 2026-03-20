@@ -38,18 +38,19 @@
             <Setter Property="BorderBrush" Value="#4B78B1" />
             <Setter Property="BorderThickness" Value="1.5" />
         </Style>
-        <Style Selector="Button.wizard-nav-button">
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="Padding" Value="12,8" />
+        <Style Selector="Button.wizard-nav-icon-button">
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Padding" Value="0" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Foreground" Value="#244268" />
-            <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
-        <Style Selector="Button.wizard-nav-button.selected">
+        <Style Selector="Button.wizard-nav-icon-button.selected">
             <Setter Property="Background" Value="#E5EEFC" />
             <Setter Property="BorderBrush" Value="#AFC3E2" />
             <Setter Property="Foreground" Value="#0B2D5C" />
@@ -288,51 +289,56 @@
         </Grid>
 
         <Grid x:Name="NewItemPage"
-              IsVisible="False"
-              RowDefinitions="Auto,16,*">
-            <Grid>
-                <TextBlock VerticalAlignment="Center"
-                           Text="New Item Workspace"
-                           FontSize="24"
-                           FontWeight="SemiBold"
-                           Foreground="#0B2D5C" />
-            </Grid>
-
-            <Grid Grid.Row="2"
-                  ColumnDefinitions="220,16,*">
+              IsVisible="False">
+            <Grid ColumnDefinitions="74,16,*">
                 <Border Grid.Column="0"
                         Background="White"
                         BorderBrush="#D7E1EF"
                         BorderThickness="1"
                         CornerRadius="10"
-                        Padding="10">
-                    <StackPanel Spacing="6">
+                        Padding="8">
+                    <StackPanel Spacing="8"
+                                HorizontalAlignment="Center">
                         <Button x:Name="NavMainListButton"
-                                Classes="wizard-nav-button"
-                                Width="44"
-                                HorizontalContentAlignment="Center"
+                                Classes="wizard-nav-icon-button"
+                                ToolTip.Tip="Back to Main"
                                 Click="OnMainListNavClicked">
-                            <PathIcon Width="16"
-                                      Height="16"
-                                      Data="M14,5 L7,12 L14,19 M8,12 H20"
-                                      Foreground="#244268" />
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M14,5 L7,12 L14,19 M7,12 L21,12" />
                         </Button>
                         <Button x:Name="NavFlowsButton"
-                                Classes="wizard-nav-button selected"
-                                Content="Flows"
-                                Click="OnFlowsNavClicked" />
+                                Classes="wizard-nav-icon-button selected"
+                                ToolTip.Tip="Flows"
+                                Click="OnFlowsNavClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M5,7 H17 M17,7 L14,4 M17,7 L14,10 M19,17 H7 M7,17 L10,14 M7,17 L10,20" />
+                        </Button>
                         <Button x:Name="NavConnectionsButton"
-                                Classes="wizard-nav-button"
-                                Content="Connections"
-                                Click="OnConnectionsNavClicked" />
+                                Classes="wizard-nav-icon-button"
+                                ToolTip.Tip="Connections"
+                                Click="OnConnectionsNavClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M5,4 A2,2 0 1 1 5,8 A2,2 0 1 1 5,4 M17,10 A2,2 0 1 1 17,14 A2,2 0 1 1 17,10 M5,16 A2,2 0 1 1 5,20 A2,2 0 1 1 5,16 M7,6 L15,12 M7,18 L15,12" />
+                        </Button>
                         <Button x:Name="NavDataItemsButton"
-                                Classes="wizard-nav-button"
-                                Content="Data Items"
-                                Click="OnDataItemsNavClicked" />
+                                Classes="wizard-nav-icon-button"
+                                ToolTip.Tip="Data Items"
+                                Click="OnDataItemsNavClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M4,5 L14,5 M4,10 L20,10 M4,15 L14,15 M4,20 L20,20 M16,5 L20,5 M16,15 L20,15" />
+                        </Button>
                         <Button x:Name="NavDataRulesButton"
-                                Classes="wizard-nav-button"
-                                Content="Data Rules"
-                                Click="OnDataRulesNavClicked" />
+                                Classes="wizard-nav-icon-button"
+                                ToolTip.Tip="Data Rules"
+                                Click="OnDataRulesNavClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M6,5 L18,5 L18,9 L6,9 Z M8,9 L16,9 L16,14 L8,14 Z M10,14 L14,14 L14,19 L10,19 Z" />
+                        </Button>
                     </StackPanel>
                 </Border>
 
