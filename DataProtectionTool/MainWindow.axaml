@@ -1,0 +1,111 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:DataProtectionTool"
+        mc:Ignorable="d"
+        d:DesignWidth="1100"
+        d:DesignHeight="700"
+        x:Class="DataProtectionTool.MainWindow"
+        Title="Data Protection Tool"
+        MinWidth="900"
+        MinHeight="600"
+        Background="#F4F7FB">
+    <Grid x:Name="RootLayoutGrid"
+          Margin="24"
+          ColumnSpacing="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="0" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0"
+              RowDefinitions="Auto,16,Auto,12,*">
+            <Grid ColumnDefinitions="Auto,12,*">
+                <Button Grid.Column="0"
+                        Content="+ New Flow"
+                        Height="38"
+                        MinWidth="140"
+                        Padding="16,0"
+                        CornerRadius="8"
+                        FontWeight="SemiBold"
+                        Background="#0B2D5C"
+                        Foreground="White"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Click="OnNewFlowClicked"
+                        HorizontalAlignment="Left" />
+
+                <TextBox Grid.Column="2"
+                         Height="38"
+                         MinWidth="260"
+                         Watermark="Search flows..."
+                         HorizontalAlignment="Stretch" />
+            </Grid>
+
+            <Border Grid.Row="2"
+                    Background="#0B2D5C"
+                    CornerRadius="8"
+                    Padding="16,12">
+                <Grid ColumnDefinitions="2.6*,1.4*,1.4*,1.6*,1.1*,0.9*"
+                      ColumnSpacing="16">
+                    <TextBlock Grid.Column="0"
+                               Text="Flow Name"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="1"
+                               Text="Domain"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="2"
+                               Text="Source"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="3"
+                               Text="Destination"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="4"
+                               Text="Status"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="5"
+                               Text="Action"
+                               Foreground="White"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="4"
+                    CornerRadius="8"
+                    Background="#F9FBFE"
+                    BorderBrush="#DCE5F2"
+                    BorderThickness="1"
+                    Padding="20">
+                <TextBlock Text="No flows yet. Click &quot;+ New Flow&quot; to create your first flow."
+                           Foreground="#5E6A7D"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"
+                           FontSize="14" />
+            </Border>
+        </Grid>
+
+        <Border x:Name="DetailsPanelHost"
+                Grid.Column="1"
+                IsVisible="False"
+                Background="White"
+                BorderBrush="#DCE5F2"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16">
+            <local:FlowDetailsPanel />
+        </Border>
+    </Grid>
+</Window>

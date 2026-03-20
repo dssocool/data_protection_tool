@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="320"
+             d:DesignHeight="640"
+             x:Class="DataProtectionTool.FlowDetailsPanel">
+    <Grid RowDefinitions="Auto,16,Auto,*">
+        <TextBlock Text="Flow Details"
+                   FontSize="22"
+                   FontWeight="SemiBold"
+                   Foreground="#0B2D5C" />
+
+        <TextBox Grid.Row="2"
+                 Height="38"
+                 HorizontalAlignment="Stretch" />
+    </Grid>
+</UserControl>
