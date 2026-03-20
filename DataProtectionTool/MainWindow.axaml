@@ -83,8 +83,8 @@
                                 Classes="wizard-nav-icon-button"
                                 ToolTip.Tip="Flows"
                                 Click="OnFlowsNavClicked">
-                            <Image Width="20"
-                                   Height="20"
+                            <Image Width="28"
+                                   Height="28"
                                    Source="{SvgImage /Assets/flow.svg}" />
                         </Button>
                     </StackPanel>
@@ -293,32 +293,32 @@
                                 Classes="wizard-nav-icon-button selected"
                                 ToolTip.Tip="Flows"
                                 Click="OnFlowsNavClicked">
-                            <Image Width="20"
-                                   Height="20"
-                                   Source="{SvgImage /Assets/flow.svg}" />
+                            <Image Width="28"
+                                   Height="28"
+                                   Source="{SvgImage /Assets/flow_in_edit.svg}" />
                         </Button>
                         <Button x:Name="NavConnectionsButton"
                                 Classes="wizard-nav-icon-button"
                                 ToolTip.Tip="Connections"
                                 Click="OnConnectionsNavClicked">
-                            <Image Width="20"
-                                   Height="20"
+                            <Image Width="28"
+                                   Height="28"
                                    Source="{SvgImage /Assets/connection.svg}" />
                         </Button>
                         <Button x:Name="NavDataItemsButton"
                                 Classes="wizard-nav-icon-button"
                                 ToolTip.Tip="Data Items"
                                 Click="OnDataItemsNavClicked">
-                            <Image Width="20"
-                                   Height="20"
+                            <Image Width="28"
+                                   Height="28"
                                    Source="{SvgImage /Assets/data_item.svg}" />
                         </Button>
                         <Button x:Name="NavDataRulesButton"
                                 Classes="wizard-nav-icon-button"
                                 ToolTip.Tip="Data Rules"
                                 Click="OnDataRulesNavClicked">
-                            <Image Width="20"
-                                   Height="20"
+                            <Image Width="28"
+                                   Height="28"
                                    Source="{SvgImage /Assets/data_rule.svg}" />
                         </Button>
                     </StackPanel>
