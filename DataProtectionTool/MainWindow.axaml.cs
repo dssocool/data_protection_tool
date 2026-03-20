@@ -485,9 +485,6 @@ public partial class MainWindow : Window
 
         SetClass(MainNavMainListButton, "selected", section is null && isMainPageVisible);
         SetClass(MainNavFlowsButton, "selected", section == WizardSection.Flows);
-        SetClass(MainNavConnectionsButton, "selected", section == WizardSection.Connections);
-        SetClass(MainNavDataItemsButton, "selected", section == WizardSection.DataItems);
-        SetClass(MainNavDataRulesButton, "selected", section == WizardSection.DataRules);
 
         SetClass(NavMainListButton, "selected", section is null && !isMainPageVisible);
         SetClass(NavFlowsButton, "selected", section == WizardSection.Flows);

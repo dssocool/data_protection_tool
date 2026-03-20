@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using System;
 using System.Collections.ObjectModel;
@@ -27,18 +28,13 @@ public partial class FlowsWizard : UserControl
     public void ResetForCreate()
     {
         _isEditMode = false;
+        _selectedItem = null;
         _editingItem = null;
         _pendingDeleteConfirmation = false;
         DeleteButton.Content = "Delete";
         SetTextBoxesReadOnly(true);
-        if (_selectedItem is null && _items.Count > 0)
-        {
-            ItemsListBox.SelectedItem = _items[0];
-        }
-        else
-        {
-            PopulateFieldsFromSelected();
-        }
+        ItemsListBox.SelectedItem = null;
+        PopulateFieldsFromSelected();
         RefreshUi();
     }
 
@@ -56,16 +52,34 @@ public partial class FlowsWizard : UserControl
         RefreshUi();
     }
 
-    private void OnItemSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void OnItemRowPressed(object? sender, PointerPressedEventArgs e)
     {
-        _selectedItem = ItemsListBox.SelectedItem as FlowListItem;
-        _editingItem = _selectedItem;
+        if (sender is not Control row || row.DataContext is not FlowListItem item)
+        {
+            return;
+        }
+
         _isEditMode = false;
         _pendingDeleteConfirmation = false;
         DeleteButton.Content = "Delete";
         SetTextBoxesReadOnly(true);
+
+        if (ReferenceEquals(_selectedItem, item))
+        {
+            ItemsListBox.SelectedItem = null;
+            _selectedItem = null;
+            _editingItem = null;
+        }
+        else
+        {
+            _selectedItem = item;
+            _editingItem = item;
+            ItemsListBox.SelectedItem = item;
+        }
+
         PopulateFieldsFromSelected();
         RefreshUi();
+        e.Handled = true;
     }
 
     private void OnEditClicked(object? sender, RoutedEventArgs e)
@@ -130,7 +144,7 @@ public partial class FlowsWizard : UserControl
         SaveItems();
         _selectedItem = null;
         _editingItem = null;
-        ItemsListBox.SelectedItem = _items.FirstOrDefault();
+        ItemsListBox.SelectedItem = null;
         PopulateFieldsFromSelected();
         RefreshUi();
     }
@@ -198,9 +212,9 @@ public partial class FlowsWizard : UserControl
             _items.Add(item);
         }
 
-        ItemsListBox.SelectedItem = _items.FirstOrDefault();
-        _selectedItem = ItemsListBox.SelectedItem as FlowListItem;
-        _editingItem = _selectedItem;
+        ItemsListBox.SelectedItem = null;
+        _selectedItem = null;
+        _editingItem = null;
         PopulateFieldsFromSelected();
     }
 
@@ -250,6 +264,7 @@ public partial class FlowsWizard : UserControl
         ItemsListBox.IsVisible = hasItems;
 
         var hasSelection = _selectedItem is not null;
+        DetailsPanel.IsVisible = hasSelection || _isEditMode;
         EditButton.IsEnabled = hasSelection && !_isEditMode;
         CopyButton.IsEnabled = hasSelection && !_isEditMode;
         DeleteButton.IsEnabled = hasSelection && !_isEditMode;

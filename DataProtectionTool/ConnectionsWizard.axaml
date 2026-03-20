@@ -72,14 +72,14 @@
                                Foreground="#4C6388" />
                     <ListBox x:Name="ItemsListBox"
                              Classes="entity-table-listbox"
-                             IsVisible="False"
-                             SelectionChanged="OnItemSelectionChanged">
+                             IsVisible="False">
                         <ListBox.ItemTemplate>
                             <DataTemplate x:DataType="local:ConnectionItem">
                                 <Border Classes="entity-table-row"
                                         Margin="0,0,0,8"
                                         Padding="12,10"
-                                        CornerRadius="6">
+                                        CornerRadius="6"
+                                        PointerPressed="OnItemRowPressed">
                                     <Grid ColumnDefinitions="1.6*,2.2*,1.2*"
                                           ColumnSpacing="14">
                                         <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
@@ -94,12 +94,14 @@
             </Border>
         </Grid>
 
-        <Border Grid.Column="2"
+        <Border x:Name="DetailsPanel"
+                Grid.Column="2"
                 BorderBrush="#D7E1EF"
                 BorderThickness="1"
                 CornerRadius="10"
                 Background="White"
-                Padding="14">
+                Padding="14"
+                IsVisible="False">
             <Grid RowDefinitions="Auto,12,Auto,8,Auto,8,Auto,8,Auto,16,Auto">
                 <Grid ColumnDefinitions="*,8,Auto,8,Auto,8,Auto">
                     <TextBlock Text="Connection Details"

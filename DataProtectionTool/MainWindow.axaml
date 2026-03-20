@@ -92,30 +92,6 @@
                                       Height="20"
                                       Data="M5,7 H17 M17,7 L14,4 M17,7 L14,10 M19,17 H7 M7,17 L10,14 M7,17 L10,20" />
                         </Button>
-                        <Button x:Name="MainNavConnectionsButton"
-                                Classes="wizard-nav-icon-button"
-                                ToolTip.Tip="Connections"
-                                Click="OnConnectionsNavClicked">
-                            <PathIcon Width="20"
-                                      Height="20"
-                                      Data="M5,4 A2,2 0 1 1 5,8 A2,2 0 1 1 5,4 M17,10 A2,2 0 1 1 17,14 A2,2 0 1 1 17,10 M5,16 A2,2 0 1 1 5,20 A2,2 0 1 1 5,16 M7,6 L15,12 M7,18 L15,12" />
-                        </Button>
-                        <Button x:Name="MainNavDataItemsButton"
-                                Classes="wizard-nav-icon-button"
-                                ToolTip.Tip="Data Items"
-                                Click="OnDataItemsNavClicked">
-                            <PathIcon Width="20"
-                                      Height="20"
-                                      Data="M4,5 L14,5 M4,10 L20,10 M4,15 L14,15 M4,20 L20,20 M16,5 L20,5 M16,15 L20,15" />
-                        </Button>
-                        <Button x:Name="MainNavDataRulesButton"
-                                Classes="wizard-nav-icon-button"
-                                ToolTip.Tip="Data Rules"
-                                Click="OnDataRulesNavClicked">
-                            <PathIcon Width="20"
-                                      Height="20"
-                                      Data="M6,5 L18,5 L18,9 L6,9 Z M8,9 L16,9 L16,14 L8,14 Z M10,14 L14,14 L14,19 L10,19 Z" />
-                        </Button>
                     </StackPanel>
                 </Border>
 
