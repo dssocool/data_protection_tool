@@ -1,14 +1,15 @@
 <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="16" y="26" width="24" height="20" rx="4" stroke="currentColor" stroke-width="6"></rect>
-  <rect x="52" y="54" width="24" height="20" rx="4" stroke="currentColor" stroke-width="6"></rect>
-  <rect x="88" y="82" width="24" height="20" rx="4" stroke="currentColor" stroke-width="6"></rect>
+  <!-- Stage nodes -->
+  <rect x="14" y="22" width="28" height="20" rx="4" stroke="currentColor" stroke-width="6"></rect>
+  <rect x="50" y="54" width="28" height="20" rx="4" stroke="currentColor" stroke-width="6"></rect>
+  <rect x="86" y="86" width="28" height="20" rx="4" stroke="currentColor" stroke-width="6"></rect>
 
-  <path d="M40 36H52" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
-  <path d="M76 64H88" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+  <!-- Continuous flow path -->
+  <path d="M42 32H64V54" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+  <path d="M78 64H100V86" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
 
-  <path d="M64 46V54" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
-  <path d="M64 74V82" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
-
-  <path d="M64 82L58 76" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
-  <path d="M64 82L70 76" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+  <!-- Arrow head -->
+  <path d="M100 106V116" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+  <path d="M100 116L93 109" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+  <path d="M100 116L107 109" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
