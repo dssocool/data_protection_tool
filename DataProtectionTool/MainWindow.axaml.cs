@@ -67,6 +67,11 @@ public partial class MainWindow : Window
         SelectWizardSection(WizardSection.Flows);
     }
 
+    private void OnEmptyStateAddFlowClicked(object? sender, RoutedEventArgs e)
+    {
+        SelectWizardSection(WizardSection.Flows, resetFlowWizard: true);
+    }
+
     private void OnFlowsNavClicked(object? sender, RoutedEventArgs e)
     {
         SelectWizardSection(WizardSection.Flows);
@@ -245,7 +250,7 @@ public partial class MainWindow : Window
     private void UpdateListUiState()
     {
         var hasFlows = _flows.Count > 0;
-        EmptyStateText.IsVisible = !hasFlows;
+        EmptyStateAddFlowButton.IsVisible = !hasFlows;
         FlowListScrollViewer.IsVisible = hasFlows;
         if (!hasFlows)
         {

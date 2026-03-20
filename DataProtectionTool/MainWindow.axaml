@@ -145,13 +145,29 @@
                             <Grid x:Name="FlowListContainer"
                                   PointerPressed="OnFlowListContainerPressed">
                                 <Grid>
-                                    <TextBlock x:Name="EmptyStateText"
-                                               Text="No flows yet. Open configuration workspace from the trigger icon to create your first flow."
-                                               Foreground="#5E6A7D"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               TextWrapping="Wrap"
-                                               FontSize="14" />
+                                    <Button x:Name="EmptyStateAddFlowButton"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent"
+                                            BorderThickness="0"
+                                            Padding="24"
+                                            Click="OnEmptyStateAddFlowClicked">
+                                        <StackPanel Spacing="4"
+                                                    HorizontalAlignment="Center">
+                                            <TextBlock Text="+"
+                                                       FontSize="120"
+                                                       FontWeight="Light"
+                                                       Foreground="#8CA4C5"
+                                                       Opacity="0.45"
+                                                       HorizontalAlignment="Center" />
+                                            <TextBlock Text="Click to add new flow ..."
+                                                       Foreground="#5E6A7D"
+                                                       HorizontalAlignment="Center"
+                                                       TextWrapping="Wrap"
+                                                       FontSize="16" />
+                                        </StackPanel>
+                                    </Button>
 
                                     <ScrollViewer x:Name="FlowListScrollViewer"
                                                   IsVisible="False"
