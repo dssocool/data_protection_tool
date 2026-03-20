@@ -1,4 +1,4 @@
-namespace DataProtectionTool;
+namespace DataProtectionTool.Models;
 
 public sealed class DataRuleRecord
 {

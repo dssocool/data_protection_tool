@@ -1,19 +1,20 @@
+using DataProtectionTool.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace DataProtectionTool;
+namespace DataProtectionTool.Services;
 
-public static class DataRuleConfigurationStore
+public static class FlowConfigurationStore
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true
     };
 
-    private static string FilePath => Path.Combine(AppStorage.ConfigDirectory, "data-rules.json");
+    private static string FilePath => Path.Combine(AppStorage.ConfigDirectory, "flows.json");
 
-    public static IReadOnlyList<DataRuleRecord> Load()
+    public static IReadOnlyList<FlowListItem> Load()
     {
         try
         {
@@ -23,8 +24,8 @@ public static class DataRuleConfigurationStore
             }
 
             var json = File.ReadAllText(FilePath);
-            var items = JsonSerializer.Deserialize<List<DataRuleRecord>>(json, JsonOptions);
-            return items ?? [];
+            var flows = JsonSerializer.Deserialize<List<FlowListItem>>(json, JsonOptions);
+            return flows ?? [];
         }
         catch
         {
@@ -32,10 +33,10 @@ public static class DataRuleConfigurationStore
         }
     }
 
-    public static void Save(IEnumerable<DataRuleRecord> items)
+    public static void Save(IEnumerable<FlowListItem> flows)
     {
         AppStorage.EnsureConfigDirectoryExists();
-        var json = JsonSerializer.Serialize(items, JsonOptions);
+        var json = JsonSerializer.Serialize(flows, JsonOptions);
         File.WriteAllText(FilePath, json);
     }
 }

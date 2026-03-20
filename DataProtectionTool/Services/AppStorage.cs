@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace DataProtectionTool;
+namespace DataProtectionTool.Services;
 
 public static class AppStorage
 {

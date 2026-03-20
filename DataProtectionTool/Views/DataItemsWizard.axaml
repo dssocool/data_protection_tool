@@ -2,11 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="using:DataProtectionTool"
+             xmlns:models="using:DataProtectionTool.Models"
              mc:Ignorable="d"
              d:DesignWidth="980"
              d:DesignHeight="700"
-             x:Class="DataProtectionTool.DataItemsWizard">
+             x:Class="DataProtectionTool.Views.DataItemsWizard">
     <UserControl.Styles>
         <Style Selector="ListBox.entity-table-listbox">
             <Setter Property="BorderThickness" Value="0" />
@@ -94,7 +94,7 @@
                          Classes="entity-table-listbox"
                          IsVisible="False">
                     <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="local:DataItemRecord">
+                        <DataTemplate x:DataType="models:DataItemRecord">
                             <Border Classes="entity-table-row"
                                     Margin="0,0,0,8"
                                     Padding="12,10"
@@ -110,7 +110,7 @@
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
-                                            <DataTemplate x:DataType="local:DataItemBadge">
+                                            <DataTemplate x:DataType="models:DataItemBadge">
                                                 <Border Classes="pill"
                                                         Margin="0,0,6,6"
                                                         Background="{Binding Background}"
@@ -130,7 +130,7 @@
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
-                                            <DataTemplate x:DataType="local:DataItemBadge">
+                                            <DataTemplate x:DataType="models:DataItemBadge">
                                                 <Border Classes="pill"
                                                         Margin="0,0,6,6"
                                                         Background="{Binding Background}"
@@ -235,7 +235,7 @@
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
-                                            <DataTemplate x:DataType="local:ConnectionChip">
+                                            <DataTemplate x:DataType="models:ConnectionChip">
                                                 <Border Classes="pill" Margin="0,0,6,6">
                                                     <Grid ColumnDefinitions="Auto,6,Auto">
                                                         <TextBlock Text="{Binding Name}" />
@@ -272,7 +272,7 @@
                                      BorderThickness="0"
                                      Background="Transparent">
                                 <ListBox.ItemTemplate>
-                                    <DataTemplate x:DataType="local:ConnectionSuggestion">
+                                    <DataTemplate x:DataType="models:ConnectionSuggestion">
                                         <Border Padding="8,6"
                                                 PointerPressed="OnConnectionSuggestionPressed">
                                             <Grid ColumnDefinitions="1.4*,1.2*">
@@ -292,7 +292,7 @@
                                     IsVisible="False">
                             <ItemsControl x:Name="PerConnectionPickersItemsControl">
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="local:ConnectionItemsPickerModel">
+                                    <DataTemplate x:DataType="models:ConnectionItemsPickerModel">
                                         <Border BorderBrush="#CBD8EA"
                                                 BorderThickness="1"
                                                 CornerRadius="8"
@@ -315,7 +315,7 @@
                                                                 </ItemsPanelTemplate>
                                                             </ItemsControl.ItemsPanel>
                                                             <ItemsControl.ItemTemplate>
-                                                                <DataTemplate x:DataType="local:FetchedItemOption">
+                                                                <DataTemplate x:DataType="models:FetchedItemOption">
                                                                     <Border Classes="pill"
                                                                             Margin="0,0,6,6"
                                                                             Background="{Binding BadgeBackground}"
@@ -349,7 +349,7 @@
                                                              BorderThickness="0"
                                                              Background="Transparent">
                                                         <ListBox.ItemTemplate>
-                                                            <DataTemplate x:DataType="local:FetchedItemOption">
+                                                            <DataTemplate x:DataType="models:FetchedItemOption">
                                                                 <Border Padding="6"
                                                                         PointerPressed="OnPerConnectionSuggestionPressed">
                                                                     <Grid ColumnDefinitions="Auto,8,*">

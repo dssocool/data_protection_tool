@@ -2,11 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="using:DataProtectionTool"
+             xmlns:models="using:DataProtectionTool.Models"
              mc:Ignorable="d"
              d:DesignWidth="760"
              d:DesignHeight="560"
-             x:Class="DataProtectionTool.DataRulesWizard">
+             x:Class="DataProtectionTool.Views.FlowsWizard">
     <UserControl.Styles>
         <Style Selector="ListBox.entity-table-listbox">
             <Setter Property="BorderThickness" Value="0" />
@@ -26,7 +26,7 @@
     <Grid RowDefinitions="Auto,10,Auto,8,*">
             <Grid Grid.Row="0"
                   ColumnDefinitions="190,Auto,*">
-                <TextBlock Text="Data Rules"
+                <TextBlock Text="Flows"
                            Grid.Column="0"
                            FontSize="22"
                            FontWeight="SemiBold"
@@ -41,17 +41,25 @@
                     Background="#0B2D5C"
                     CornerRadius="8"
                     Padding="16,10">
-                <Grid ColumnDefinitions="1.9*,1.1*,1.6*"
-                      ColumnSpacing="14">
-                    <TextBlock Text="Rule Name"
+                <Grid ColumnDefinitions="2.8*,1.5*,1.5*,1.7*,1.2*"
+                      ColumnSpacing="16">
+                    <TextBlock Text="Flow Name"
                                Foreground="White"
                                FontWeight="SemiBold" />
                     <TextBlock Grid.Column="1"
-                               Text="Severity"
+                               Text="Domain"
                                Foreground="White"
                                FontWeight="SemiBold" />
                     <TextBlock Grid.Column="2"
-                               Text="Applies To"
+                               Text="Source"
+                               Foreground="White"
+                               FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="3"
+                               Text="Destination"
+                               Foreground="White"
+                               FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="4"
+                               Text="Status"
                                Foreground="White"
                                FontWeight="SemiBold" />
                 </Grid>
@@ -65,7 +73,7 @@
                     Padding="10">
                 <Grid>
                     <TextBlock x:Name="EmptyStateText"
-                               Text="No data rules yet. Click Add New to create one."
+                               Text="No flows yet. Click Add New to create one."
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                Foreground="#4C6388" />
@@ -73,17 +81,19 @@
                              Classes="entity-table-listbox"
                              IsVisible="False">
                         <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="local:DataRuleRecord">
+                            <DataTemplate x:DataType="models:FlowListItem">
                                 <Border Classes="entity-table-row"
                                         Margin="0,0,0,8"
                                         Padding="12,10"
                                         CornerRadius="6"
                                         PointerPressed="OnItemRowPressed">
-                                    <Grid ColumnDefinitions="1.9*,1.1*,1.6*"
-                                          ColumnSpacing="14">
-                                        <TextBlock Text="{Binding RuleName}" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Grid.Column="1" Text="{Binding Severity}" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Grid.Column="2" Text="{Binding AppliesTo}" TextTrimming="CharacterEllipsis" />
+                                    <Grid ColumnDefinitions="2.8*,1.5*,1.5*,1.7*,1.2*"
+                                          ColumnSpacing="16">
+                                        <TextBlock Text="{Binding FlowName}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Domain}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Source}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="3" Text="{Binding Destination}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="4" Text="{Binding Status}" TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -104,9 +114,9 @@
                 Background="White"
                 Padding="14"
                 IsVisible="False">
-            <Grid RowDefinitions="Auto,12,Auto,8,Auto,8,Auto,8,Auto,16,Auto">
+            <Grid RowDefinitions="Auto,12,Auto,8,Auto,8,Auto,8,Auto,8,Auto,16,Auto">
                 <Grid ColumnDefinitions="*,8,Auto,8,Auto,8,Auto">
-                    <TextBlock Text="Data Rule Details"
+                    <TextBlock Text="Flow Details"
                                FontSize="18"
                                FontWeight="SemiBold"
                                Foreground="#0B2D5C" />
@@ -127,16 +137,22 @@
                             Click="OnDeleteClicked" />
                 </Grid>
 
-                <TextBlock Grid.Row="2" Text="Rule Name" Foreground="#4C6388" />
-                <TextBox x:Name="RuleNameTextBox" Grid.Row="3" Height="36" IsReadOnly="True" />
-                <TextBlock Grid.Row="4" Text="Description" Foreground="#4C6388" />
-                <TextBox x:Name="DescriptionTextBox" Grid.Row="5" Height="72" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" />
-                <TextBlock Grid.Row="6" Text="Severity" Foreground="#4C6388" />
-                <TextBox x:Name="SeverityTextBox" Grid.Row="7" Height="36" IsReadOnly="True" />
-                <TextBlock Grid.Row="8" Text="Applies To" Foreground="#4C6388" />
-                <TextBox x:Name="AppliesToTextBox" Grid.Row="9" Height="36" IsReadOnly="True" />
+                <TextBlock Grid.Row="2" Text="Flow Name" Foreground="#4C6388" />
+                <TextBox x:Name="FlowNameTextBox" Grid.Row="3" Height="36" IsReadOnly="True" />
 
-                <Grid Grid.Row="10"
+                <TextBlock Grid.Row="4" Text="Source" Foreground="#4C6388" />
+                <TextBox x:Name="SourceTextBox" Grid.Row="5" Height="36" IsReadOnly="True" />
+
+                <TextBlock Grid.Row="6" Text="Destination" Foreground="#4C6388" />
+                <TextBox x:Name="DestinationTextBox" Grid.Row="7" Height="36" IsReadOnly="True" />
+
+                <TextBlock Grid.Row="8" Text="Data Items" Foreground="#4C6388" />
+                <TextBox x:Name="DataItemsTextBox" Grid.Row="9" Height="36" IsReadOnly="True" />
+
+                <TextBlock Grid.Row="10" Text="Data Rules" Foreground="#4C6388" />
+                <TextBox x:Name="DataRulesTextBox" Grid.Row="11" Height="36" IsReadOnly="True" />
+
+                <Grid Grid.Row="12"
                       ColumnDefinitions="*,8,Auto,8,Auto">
                     <TextBlock x:Name="StatusText"
                                VerticalAlignment="Center"

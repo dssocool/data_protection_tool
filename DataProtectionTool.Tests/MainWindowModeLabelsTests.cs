@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
-using DataProtectionTool;
+using DataProtectionTool.Views;
 using Xunit;
 
 namespace DataProtectionTool.Tests;

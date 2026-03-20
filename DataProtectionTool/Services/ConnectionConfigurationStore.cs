@@ -1,19 +1,20 @@
+using DataProtectionTool.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace DataProtectionTool;
+namespace DataProtectionTool.Services;
 
-public static class DataItemConfigurationStore
+public static class ConnectionConfigurationStore
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true
     };
 
-    private static string FilePath => Path.Combine(AppStorage.ConfigDirectory, "data-items.json");
+    private static string FilePath => Path.Combine(AppStorage.ConfigDirectory, "connections.json");
 
-    public static IReadOnlyList<DataItemRecord> Load()
+    public static IReadOnlyList<ConnectionItem> Load()
     {
         try
         {
@@ -23,7 +24,7 @@ public static class DataItemConfigurationStore
             }
 
             var json = File.ReadAllText(FilePath);
-            var items = JsonSerializer.Deserialize<List<DataItemRecord>>(json, JsonOptions);
+            var items = JsonSerializer.Deserialize<List<ConnectionItem>>(json, JsonOptions);
             return items ?? [];
         }
         catch
@@ -32,7 +33,7 @@ public static class DataItemConfigurationStore
         }
     }
 
-    public static void Save(IEnumerable<DataItemRecord> items)
+    public static void Save(IEnumerable<ConnectionItem> items)
     {
         AppStorage.EnsureConfigDirectoryExists();
         var json = JsonSerializer.Serialize(items, JsonOptions);

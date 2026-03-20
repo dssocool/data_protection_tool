@@ -1,11 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using DataProtectionTool.Models;
+using DataProtectionTool.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace DataProtectionTool;
+namespace DataProtectionTool.Views;
 
 public partial class DataRulesWizard : UserControl
 {

@@ -3,6 +3,8 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Azure;
 using Azure.Storage.Blobs;
+using DataProtectionTool.Models;
+using DataProtectionTool.Services;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.ObjectModel;
@@ -10,7 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DataProtectionTool;
+namespace DataProtectionTool.Views;
 
 public partial class ConnectionsWizard : UserControl
 {
