@@ -1,0 +1,15 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Decision diamond -->
+  <path d="M64 20L100 56L64 92L28 56Z" stroke="currentColor" stroke-width="6" stroke-linejoin="round"></path>
+
+  <!-- Input line -->
+  <path d="M64 8V20" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+
+  <!-- Output branches -->
+  <path d="M64 92V112" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+  <path d="M28 56H12" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+  <path d="M100 56H116" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+
+  <!-- Check inside (rule satisfied) -->
+  <path d="M52 56L60 64L76 48" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
