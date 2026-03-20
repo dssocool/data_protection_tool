@@ -6,23 +6,132 @@
              d:DesignWidth="760"
              d:DesignHeight="560"
              x:Class="DataProtectionTool.ConnectionsWizard">
-    <StackPanel Spacing="14">
-        <TextBlock Text="Connections Wizard"
-                   FontSize="24"
-                   FontWeight="SemiBold"
-                   Foreground="#0B2D5C" />
-        <TextBlock Text="Scaffold mode: define connection profile details in upcoming steps."
+    <Grid RowDefinitions="Auto,8,Auto,14,*">
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Connections Wizard"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       Foreground="#0B2D5C" />
+
+            <Button x:Name="ValidateSaveButton"
+                    Grid.Column="1"
+                    Content="Validate"
+                    Width="110"
+                    Height="36"
+                    Background="#0B2D5C"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    Click="OnValidateSaveClicked" />
+        </Grid>
+
+        <TextBlock Grid.Row="2"
+                   Text="Select a connection type, validate connectivity, then save the profile."
                    Foreground="#4C6388"
                    TextWrapping="Wrap" />
-        <Border BorderBrush="#D7E1EF"
+
+        <Border Grid.Row="4"
+                BorderBrush="#D7E1EF"
                 BorderThickness="1"
                 CornerRadius="10"
                 Background="White"
-                Padding="16">
-            <StackPanel Spacing="12">
-                <TextBox Height="38" Watermark="Connection Name" />
-                <TextBox Height="38" Watermark="Endpoint / Host" />
-            </StackPanel>
+                Padding="14">
+            <Grid ColumnDefinitions="220,14,*">
+                <Border Grid.Column="0"
+                        Background="#F8FBFF"
+                        BorderBrush="#D7E1EF"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="8">
+                    <ListBox x:Name="ConnectionTypeList"
+                             SelectionChanged="OnConnectionTypeChanged"
+                             SelectedIndex="0">
+                        <ListBoxItem Content="Microsoft SQL Server" />
+                        <ListBoxItem Content="Azure Fabric" />
+                        <ListBoxItem Content="Azure Blob Storage" />
+                    </ListBox>
+                </Border>
+
+                <Border Grid.Column="2"
+                        BorderBrush="#E3EBF6"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="14">
+                    <Grid RowDefinitions="*,10,Auto">
+                        <Grid>
+                            <StackPanel x:Name="SqlServerPanel"
+                                        Spacing="10">
+                                <TextBlock Text="Microsoft SQL Server"
+                                           FontSize="18"
+                                           FontWeight="SemiBold"
+                                           Foreground="#0B2D5C" />
+                                <TextBox x:Name="SqlServerNameTextBox"
+                                         Height="38"
+                                         Watermark="Server Name"
+                                         TextChanged="OnAnyInputChanged" />
+                                <ComboBox x:Name="SqlAuthenticationTypeComboBox"
+                                          Height="38"
+                                          SelectionChanged="OnSqlAuthenticationTypeChanged">
+                                    <ComboBoxItem Content="Entra" />
+                                    <ComboBoxItem Content="SQL Server" />
+                                </ComboBox>
+                                <TextBox x:Name="SqlUserNameTextBox"
+                                         Height="38"
+                                         Watermark="User Name"
+                                         TextChanged="OnAnyInputChanged" />
+                                <TextBox x:Name="SqlPasswordTextBox"
+                                         Height="38"
+                                         PasswordChar="*"
+                                         Watermark="Password"
+                                         TextChanged="OnAnyInputChanged" />
+                                <TextBox x:Name="SqlDatabaseTextBox"
+                                         Height="38"
+                                         Watermark="Database"
+                                         TextChanged="OnAnyInputChanged" />
+                            </StackPanel>
+
+                            <StackPanel x:Name="FabricPanel"
+                                        IsVisible="False"
+                                        Spacing="10">
+                                <TextBlock Text="Azure Fabric"
+                                           FontSize="18"
+                                           FontWeight="SemiBold"
+                                           Foreground="#0B2D5C" />
+                                <TextBox x:Name="FabricConnectionStringTextBox"
+                                         Height="38"
+                                         Watermark="Connection String"
+                                         TextChanged="OnAnyInputChanged" />
+                            </StackPanel>
+
+                            <StackPanel x:Name="BlobPanel"
+                                        IsVisible="False"
+                                        Spacing="10">
+                                <TextBlock Text="Azure Blob Storage"
+                                           FontSize="18"
+                                           FontWeight="SemiBold"
+                                           Foreground="#0B2D5C" />
+                                <TextBox x:Name="BlobStorageAccountTextBox"
+                                         Height="38"
+                                         Watermark="Storage Account"
+                                         TextChanged="OnAnyInputChanged" />
+                                <TextBox x:Name="BlobContainerTextBox"
+                                         Height="38"
+                                         Watermark="Container"
+                                         TextChanged="OnAnyInputChanged" />
+                                <TextBox x:Name="BlobAccessKeyTextBox"
+                                         Height="38"
+                                         PasswordChar="*"
+                                         Watermark="Access Key"
+                                         TextChanged="OnAnyInputChanged" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock x:Name="ConnectionStatusText"
+                                   Grid.Row="2"
+                                   Foreground="#4C6388"
+                                   TextWrapping="Wrap" />
+                    </Grid>
+                </Border>
+            </Grid>
         </Border>
-    </StackPanel>
+    </Grid>
 </UserControl>
