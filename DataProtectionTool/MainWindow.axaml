@@ -60,7 +60,8 @@
           Margin="24">
         <Grid x:Name="MainListPage"
               RowDefinitions="Auto,16,Auto,12,*">
-            <Grid ColumnDefinitions="*,12,Auto,8,Auto,8,Auto,12,Auto">
+            <Grid ColumnDefinitions="*,12,Auto,8,Auto,8,Auto,12,Auto"
+                  Margin="60,0">
                 <TextBox Grid.Column="0"
                          Height="38"
                          MinWidth="260"
