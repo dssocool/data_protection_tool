@@ -60,237 +60,253 @@
     <Grid x:Name="RootLayoutGrid"
           Margin="24">
         <Grid x:Name="MainListPage"
-              RowDefinitions="Auto,16,Auto,12,*">
-            <Grid ColumnDefinitions="*,12,Auto,8,Auto,8,Auto,12,Auto"
-                  Margin="60,0">
-                <TextBox Grid.Column="0"
-                         Height="38"
-                         MinWidth="260"
-                         Watermark="Search flows..."
-                         HorizontalAlignment="Stretch" />
+              RowDefinitions="Auto,12,*">
+            <TextBlock Text="Execution Workspace"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       Foreground="#0B2D5C" />
 
-                <Button Grid.Column="2"
-                        Classes="top-icon-button"
-                        ToolTip.Tip="Connections"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                    <PathIcon Width="18"
-                              Height="18"
-                              Data="M5,4 A2,2 0 1 1 5,8 A2,2 0 1 1 5,4 M17,10 A2,2 0 1 1 17,14 A2,2 0 1 1 17,10 M5,16 A2,2 0 1 1 5,20 A2,2 0 1 1 5,16 M7,6 L15,12 M7,18 L15,12"
-                              Foreground="#0B2D5C" />
-                </Button>
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="74,16,*">
+                <Border Grid.Column="0"
+                        Background="White"
+                        BorderBrush="#D7E1EF"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="8">
+                    <StackPanel Spacing="8"
+                                HorizontalAlignment="Center">
+                        <Button x:Name="MainNavMainListButton"
+                                Classes="wizard-nav-icon-button selected"
+                                ToolTip.Tip="go to configuration workspace"
+                                Click="OnGoToConfigurationWorkspaceClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M13,2 L6,13 H11 L9,22 L18,10 H13 Z" />
+                        </Button>
+                        <Button x:Name="MainNavFlowsButton"
+                                Classes="wizard-nav-icon-button"
+                                ToolTip.Tip="Flows"
+                                Click="OnFlowsNavClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M5,7 H17 M17,7 L14,4 M17,7 L14,10 M19,17 H7 M7,17 L10,14 M7,17 L10,20" />
+                        </Button>
+                        <Button x:Name="MainNavConnectionsButton"
+                                Classes="wizard-nav-icon-button"
+                                ToolTip.Tip="Connections"
+                                Click="OnConnectionsNavClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M5,4 A2,2 0 1 1 5,8 A2,2 0 1 1 5,4 M17,10 A2,2 0 1 1 17,14 A2,2 0 1 1 17,10 M5,16 A2,2 0 1 1 5,20 A2,2 0 1 1 5,16 M7,6 L15,12 M7,18 L15,12" />
+                        </Button>
+                        <Button x:Name="MainNavDataItemsButton"
+                                Classes="wizard-nav-icon-button"
+                                ToolTip.Tip="Data Items"
+                                Click="OnDataItemsNavClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M4,5 L14,5 M4,10 L20,10 M4,15 L14,15 M4,20 L20,20 M16,5 L20,5 M16,15 L20,15" />
+                        </Button>
+                        <Button x:Name="MainNavDataRulesButton"
+                                Classes="wizard-nav-icon-button"
+                                ToolTip.Tip="Data Rules"
+                                Click="OnDataRulesNavClicked">
+                            <PathIcon Width="20"
+                                      Height="20"
+                                      Data="M6,5 L18,5 L18,9 L6,9 Z M8,9 L16,9 L16,14 L8,14 Z M10,14 L14,14 L14,19 L10,19 Z" />
+                        </Button>
+                    </StackPanel>
+                </Border>
 
-                <Button Grid.Column="4"
-                        Classes="top-icon-button"
-                        ToolTip.Tip="Data Items"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                    <PathIcon Width="18"
-                              Height="18"
-                              Data="M4,5 L14,5 M4,10 L20,10 M4,15 L14,15 M4,20 L20,20 M16,5 L20,5 M16,15 L20,15"
-                              Foreground="#0B2D5C" />
-                </Button>
+                <Grid Grid.Column="2"
+                      RowDefinitions="Auto,16,Auto,12,*">
+                    <TextBox Height="38"
+                             MinWidth="260"
+                             Watermark="Search flows..."
+                             HorizontalAlignment="Stretch" />
 
-                <Button Grid.Column="6"
-                        Classes="top-icon-button"
-                        ToolTip.Tip="Data Rules"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                    <PathIcon Width="18"
-                              Height="18"
-                              Data="M6,5 L18,5 L18,9 L6,9 Z M8,9 L16,9 L16,14 L8,14 Z M10,14 L14,14 L14,19 L10,19 Z"
-                              Foreground="#0B2D5C" />
-                </Button>
+                    <Border Grid.Row="2"
+                            Background="#0B2D5C"
+                            CornerRadius="8"
+                            Padding="16,12">
+                        <Grid ColumnDefinitions="2.8*,1.5*,1.5*,1.7*,1.2*"
+                              ColumnSpacing="16">
+                            <TextBlock Grid.Column="0"
+                                       Text="Flow Name"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="1"
+                                       Text="Domain"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="2"
+                                       Text="Source"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="3"
+                                       Text="Destination"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="4"
+                                       Text="Status"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Border>
 
-                <Button Grid.Column="8"
-                        Content="Create"
-                        Height="38"
-                        MinWidth="140"
-                        Padding="16,0"
-                        CornerRadius="8"
-                        FontWeight="SemiBold"
-                        Background="#0B2D5C"
-                        Foreground="White"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Click="OnNewItemClicked"
-                        HorizontalAlignment="Right" />
-            </Grid>
+                    <Grid x:Name="FlowListContainer"
+                          Grid.Row="4"
+                          PointerPressed="OnFlowListContainerPressed">
+                        <Grid>
+                            <TextBlock x:Name="EmptyStateText"
+                                       Text="No flows yet. Open configuration workspace from the trigger icon to create your first flow."
+                                       Foreground="#5E6A7D"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       FontSize="14" />
 
-            <Border Grid.Row="2"
-                    Margin="60,0"
-                    Background="#0B2D5C"
-                    CornerRadius="8"
-                    Padding="16,12">
-                <Grid ColumnDefinitions="2.8*,1.5*,1.5*,1.7*,1.2*"
-                      ColumnSpacing="16">
-                    <TextBlock Grid.Column="0"
-                               Text="Flow Name"
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis" />
-                    <TextBlock Grid.Column="1"
-                               Text="Domain"
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis" />
-                    <TextBlock Grid.Column="2"
-                               Text="Source"
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis" />
-                    <TextBlock Grid.Column="3"
-                               Text="Destination"
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis" />
-                    <TextBlock Grid.Column="4"
-                               Text="Status"
-                               Foreground="White"
-                               FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis" />
-                </Grid>
-            </Border>
+                            <ScrollViewer x:Name="FlowListScrollViewer"
+                                          IsVisible="False"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          VerticalScrollBarVisibility="Auto">
+                                <ItemsControl x:Name="FlowListItemsControl">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="local:FlowListItem">
+                                            <Border Margin="0,0,0,10"
+                                                    Classes="flow-row"
+                                                    MinHeight="52"
+                                                    Padding="16,12"
+                                                    CornerRadius="6"
+                                                    PointerEntered="OnFlowRowPointerEntered"
+                                                    PointerExited="OnFlowRowPointerExited"
+                                                    PointerPressed="OnFlowRowPointerPressed">
+                                                <Grid ColumnDefinitions="2.8*,1.5*,1.5*,1.7*,1.2*"
+                                                      ColumnSpacing="16">
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{Binding FlowName}"
+                                                               Foreground="#21314A"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding Domain}"
+                                                               Foreground="#21314A"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="2"
+                                                               Text="{Binding Source}"
+                                                               Foreground="#21314A"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="3"
+                                                               Text="{Binding Destination}"
+                                                               Foreground="#21314A"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Grid.Column="4"
+                                                               Text="{Binding Status}"
+                                                               Foreground="#21314A"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
 
-            <Grid x:Name="FlowListContainer"
-                  Grid.Row="4"
-                  Margin="60,0"
-                  PointerPressed="OnFlowListContainerPressed">
-                <Grid>
-                    <TextBlock x:Name="EmptyStateText"
-                               Text="No flows yet. Click &quot;New Item&quot; to create your first flow."
-                               Foreground="#5E6A7D"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               TextWrapping="Wrap"
-                               FontSize="14" />
+                            <Canvas x:Name="FlowPopoverCanvas"
+                                    IsVisible="False"
+                                    ZIndex="10">
+                                <Border x:Name="FlowHoverPopover"
+                                        Width="320"
+                                        Padding="14"
+                                        Background="White"
+                                        BorderBrush="#9DB3D1"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        PointerEntered="OnPopoverPointerEntered"
+                                        PointerExited="OnPopoverPointerExited"
+                                        PointerPressed="OnPopoverPointerPressed">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock x:Name="PopoverTitleText"
+                                                   FontSize="18"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#0B2D5C"
+                                                   TextTrimming="CharacterEllipsis" />
 
-                    <ScrollViewer x:Name="FlowListScrollViewer"
-                                  IsVisible="False"
-                                  HorizontalScrollBarVisibility="Disabled"
-                                  VerticalScrollBarVisibility="Auto">
-                        <ItemsControl x:Name="FlowListItemsControl">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="local:FlowListItem">
-                                    <Border Margin="0,0,0,10"
-                                            Classes="flow-row"
-                                            MinHeight="52"
-                                            Padding="16,12"
-                                            CornerRadius="6"
-                                            PointerEntered="OnFlowRowPointerEntered"
-                                            PointerExited="OnFlowRowPointerExited"
-                                            PointerPressed="OnFlowRowPointerPressed">
-                                        <Grid ColumnDefinitions="2.8*,1.5*,1.5*,1.7*,1.2*"
-                                              ColumnSpacing="16">
-                                            <TextBlock Grid.Column="0"
-                                                       Text="{Binding FlowName}"
+                                        <Grid ColumnDefinitions="Auto,10,*"
+                                              RowDefinitions="Auto,8,Auto,8,Auto,8,Auto">
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="0"
+                                                       Text="Source"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#34445F" />
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="2"
+                                                       x:Name="PopoverSourceText"
                                                        Foreground="#21314A"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding Domain}"
+                                                       TextWrapping="Wrap" />
+
+                                            <TextBlock Grid.Row="2"
+                                                       Grid.Column="0"
+                                                       Text="Destination"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#34445F" />
+                                            <TextBlock Grid.Row="2"
+                                                       Grid.Column="2"
+                                                       x:Name="PopoverDestinationText"
                                                        Foreground="#21314A"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Grid.Column="2"
-                                                       Text="{Binding Source}"
+                                                       TextWrapping="Wrap" />
+
+                                            <TextBlock Grid.Row="4"
+                                                       Grid.Column="0"
+                                                       Text="Data Items"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#34445F" />
+                                            <TextBlock Grid.Row="4"
+                                                       Grid.Column="2"
+                                                       x:Name="PopoverDataItemsText"
                                                        Foreground="#21314A"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Grid.Column="3"
-                                                       Text="{Binding Destination}"
+                                                       TextWrapping="Wrap" />
+
+                                            <TextBlock Grid.Row="6"
+                                                       Grid.Column="0"
+                                                       Text="Data Rules"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#34445F" />
+                                            <TextBlock Grid.Row="6"
+                                                       Grid.Column="2"
+                                                       x:Name="PopoverDataRulesText"
                                                        Foreground="#21314A"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Grid.Column="4"
-                                                       Text="{Binding Status}"
-                                                       Foreground="#21314A"
-                                                       TextTrimming="CharacterEllipsis" />
+                                                       TextWrapping="Wrap" />
                                         </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
 
-                    <Canvas x:Name="FlowPopoverCanvas"
-                            IsVisible="False"
-                            ZIndex="10">
-                        <Border x:Name="FlowHoverPopover"
-                                Width="320"
-                                Padding="14"
-                                Background="White"
-                                BorderBrush="#9DB3D1"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                PointerEntered="OnPopoverPointerEntered"
-                                PointerExited="OnPopoverPointerExited"
-                                PointerPressed="OnPopoverPointerPressed">
-                            <StackPanel Spacing="10">
-                                <TextBlock x:Name="PopoverTitleText"
-                                           FontSize="18"
-                                           FontWeight="SemiBold"
-                                           Foreground="#0B2D5C"
-                                           TextTrimming="CharacterEllipsis" />
-
-                                <Grid ColumnDefinitions="Auto,10,*"
-                                      RowDefinitions="Auto,8,Auto,8,Auto,8,Auto">
-                                    <TextBlock Grid.Row="0"
-                                               Grid.Column="0"
-                                               Text="Source"
-                                               FontWeight="SemiBold"
-                                               Foreground="#34445F" />
-                                    <TextBlock Grid.Row="0"
-                                               Grid.Column="2"
-                                               x:Name="PopoverSourceText"
-                                               Foreground="#21314A"
-                                               TextWrapping="Wrap" />
-
-                                    <TextBlock Grid.Row="2"
-                                               Grid.Column="0"
-                                               Text="Destination"
-                                               FontWeight="SemiBold"
-                                               Foreground="#34445F" />
-                                    <TextBlock Grid.Row="2"
-                                               Grid.Column="2"
-                                               x:Name="PopoverDestinationText"
-                                               Foreground="#21314A"
-                                               TextWrapping="Wrap" />
-
-                                    <TextBlock Grid.Row="4"
-                                               Grid.Column="0"
-                                               Text="Data Items"
-                                               FontWeight="SemiBold"
-                                               Foreground="#34445F" />
-                                    <TextBlock Grid.Row="4"
-                                               Grid.Column="2"
-                                               x:Name="PopoverDataItemsText"
-                                               Foreground="#21314A"
-                                               TextWrapping="Wrap" />
-
-                                    <TextBlock Grid.Row="6"
-                                               Grid.Column="0"
-                                               Text="Data Rules"
-                                               FontWeight="SemiBold"
-                                               Foreground="#34445F" />
-                                    <TextBlock Grid.Row="6"
-                                               Grid.Column="2"
-                                               x:Name="PopoverDataRulesText"
-                                               Foreground="#21314A"
-                                               TextWrapping="Wrap" />
-                                </Grid>
-
-                                <TextBlock x:Name="PopoverPinnedHintText"
-                                           IsVisible="False"
-                                           Text="Pinned. Press Esc or click blank area to unpin."
-                                           Foreground="#4C6388"
-                                           FontSize="12" />
-                            </StackPanel>
-                        </Border>
-                    </Canvas>
+                                        <TextBlock x:Name="PopoverPinnedHintText"
+                                                   IsVisible="False"
+                                                   Text="Pinned. Press Esc or click blank area to unpin."
+                                                   Foreground="#4C6388"
+                                                   FontSize="12" />
+                                    </StackPanel>
+                                </Border>
+                            </Canvas>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
 
         <Grid x:Name="NewItemPage"
-              IsVisible="False">
-            <Grid ColumnDefinitions="74,16,*">
+              IsVisible="False"
+              RowDefinitions="Auto,12,*">
+            <TextBlock Text="Configuration Workspace"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       Foreground="#0B2D5C" />
+
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="74,16,*">
                 <Border Grid.Column="0"
                         Background="White"
                         BorderBrush="#D7E1EF"
@@ -301,11 +317,11 @@
                                 HorizontalAlignment="Center">
                         <Button x:Name="NavMainListButton"
                                 Classes="wizard-nav-icon-button"
-                                ToolTip.Tip="Back to Main"
+                                ToolTip.Tip="go to execution workspace"
                                 Click="OnMainListNavClicked">
                             <PathIcon Width="20"
                                       Height="20"
-                                      Data="M14,5 L7,12 L14,19 M7,12 L21,12" />
+                                      Data="M13,2 L6,13 H11 L9,22 L18,10 H13 Z" />
                         </Button>
                         <Button x:Name="NavFlowsButton"
                                 Classes="wizard-nav-icon-button selected"

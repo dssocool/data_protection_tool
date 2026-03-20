@@ -40,7 +40,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _hoverExitTimer.Tick += OnHoverExitTimerTick;
-        _flowsWizard.SaveRequested += OnFlowsWizardSaveRequested;
+        _flowsWizard.FlowsChanged += OnFlowsWizardChanged;
         WizardContentHost.Content = _flowsWizard;
         LoadSavedFlows();
         ShowMainListPage();
@@ -60,6 +60,11 @@ public partial class MainWindow : Window
     private void OnMainListNavClicked(object? sender, RoutedEventArgs e)
     {
         ShowMainListPage();
+    }
+
+    private void OnGoToConfigurationWorkspaceClicked(object? sender, RoutedEventArgs e)
+    {
+        SelectWizardSection(WizardSection.Flows);
     }
 
     private void OnFlowsNavClicked(object? sender, RoutedEventArgs e)
@@ -199,15 +204,14 @@ public partial class MainWindow : Window
         e.Handled = true;
     }
 
-    private void OnFlowsWizardSaveRequested(object? sender, FlowDetailsInput details)
+    private void OnFlowsWizardChanged(object? sender, EventArgs e)
     {
-        AddFlow(details);
-        _flowsWizard.ResetForCreate();
-        ShowMainListPage();
+        LoadSavedFlows();
     }
 
     private void LoadSavedFlows()
     {
+        _flows.Clear();
         foreach (var flow in FlowConfigurationStore.Load())
         {
             _flows.Add(flow);
@@ -436,9 +440,10 @@ public partial class MainWindow : Window
 
     private void ShowMainListPage()
     {
+        LoadSavedFlows();
         MainListPage.IsVisible = true;
         NewItemPage.IsVisible = false;
-        UpdateWizardNavSelection(null);
+        UpdateWizardNavSelection(WizardSection.Flows);
     }
 
     private void ShowNewItemPage()
@@ -476,7 +481,15 @@ public partial class MainWindow : Window
 
     private void UpdateWizardNavSelection(WizardSection? section)
     {
-        SetClass(NavMainListButton, "selected", false);
+        var isMainPageVisible = MainListPage.IsVisible;
+
+        SetClass(MainNavMainListButton, "selected", section is null && isMainPageVisible);
+        SetClass(MainNavFlowsButton, "selected", section == WizardSection.Flows);
+        SetClass(MainNavConnectionsButton, "selected", section == WizardSection.Connections);
+        SetClass(MainNavDataItemsButton, "selected", section == WizardSection.DataItems);
+        SetClass(MainNavDataRulesButton, "selected", section == WizardSection.DataRules);
+
+        SetClass(NavMainListButton, "selected", section is null && !isMainPageVisible);
         SetClass(NavFlowsButton, "selected", section == WizardSection.Flows);
         SetClass(NavConnectionsButton, "selected", section == WizardSection.Connections);
         SetClass(NavDataItemsButton, "selected", section == WizardSection.DataItems);

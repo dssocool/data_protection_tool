@@ -1,78 +1,303 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace DataProtectionTool;
 
 public partial class FlowsWizard : UserControl
 {
-    private int _stepIndex;
+    private readonly ObservableCollection<FlowListItem> _items = [];
+    private FlowListItem? _selectedItem;
+    private FlowListItem? _editingItem;
+    private bool _isEditMode;
+    private bool _pendingDeleteConfirmation;
 
-    public event EventHandler<FlowDetailsInput>? SaveRequested;
+    public event EventHandler? FlowsChanged;
 
     public FlowsWizard()
     {
         InitializeComponent();
-        ResetForCreate();
+        ItemsListBox.ItemsSource = _items;
+        LoadItems();
+        RefreshUi();
     }
 
     public void ResetForCreate()
     {
-        _stepIndex = 0;
+        _isEditMode = false;
+        _editingItem = null;
+        _pendingDeleteConfirmation = false;
+        DeleteButton.Content = "Delete";
+        SetTextBoxesReadOnly(true);
+        if (_selectedItem is null && _items.Count > 0)
+        {
+            ItemsListBox.SelectedItem = _items[0];
+        }
+        else
+        {
+            PopulateFieldsFromSelected();
+        }
+        RefreshUi();
+    }
+
+    private void OnAddNewClicked(object? sender, RoutedEventArgs e)
+    {
+        ItemsListBox.SelectedItem = null;
+        _selectedItem = null;
+        _editingItem = null;
+        _isEditMode = true;
+        _pendingDeleteConfirmation = false;
+        DeleteButton.Content = "Delete";
+        ClearFields();
+        SetTextBoxesReadOnly(false);
+        FlowNameTextBox.Focus();
+        RefreshUi();
+    }
+
+    private void OnItemSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        _selectedItem = ItemsListBox.SelectedItem as FlowListItem;
+        _editingItem = _selectedItem;
+        _isEditMode = false;
+        _pendingDeleteConfirmation = false;
+        DeleteButton.Content = "Delete";
+        SetTextBoxesReadOnly(true);
+        PopulateFieldsFromSelected();
+        RefreshUi();
+    }
+
+    private void OnEditClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_selectedItem is null)
+        {
+            return;
+        }
+
+        _isEditMode = true;
+        _editingItem = _selectedItem;
+        _pendingDeleteConfirmation = false;
+        DeleteButton.Content = "Delete";
+        SetTextBoxesReadOnly(false);
+        FlowNameTextBox.Focus();
+        RefreshUi();
+    }
+
+    private void OnCopyClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_selectedItem is null)
+        {
+            return;
+        }
+
+        var copy = new FlowListItem
+        {
+            FlowName = BuildUniqueName(_selectedItem.FlowName, item => item.FlowName),
+            Domain = _selectedItem.Domain,
+            Source = _selectedItem.Source,
+            Destination = _selectedItem.Destination,
+            Status = _selectedItem.Status,
+            Action = _selectedItem.Action,
+            DataItems = _selectedItem.DataItems,
+            DataRules = _selectedItem.DataRules
+        };
+
+        _items.Add(copy);
+        SaveItems();
+        ItemsListBox.SelectedItem = copy;
+    }
+
+    private void OnDeleteClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_selectedItem is null)
+        {
+            return;
+        }
+
+        if (!_pendingDeleteConfirmation)
+        {
+            _pendingDeleteConfirmation = true;
+            DeleteButton.Content = "Confirm Delete";
+            StatusText.Text = "Click Confirm Delete to remove this flow.";
+            return;
+        }
+
+        var toDelete = _selectedItem;
+        _pendingDeleteConfirmation = false;
+        DeleteButton.Content = "Delete";
+        _items.Remove(toDelete);
+        SaveItems();
+        _selectedItem = null;
+        _editingItem = null;
+        ItemsListBox.SelectedItem = _items.FirstOrDefault();
+        PopulateFieldsFromSelected();
+        RefreshUi();
+    }
+
+    private void OnCancelEditClicked(object? sender, RoutedEventArgs e)
+    {
+        _isEditMode = false;
+        _pendingDeleteConfirmation = false;
+        DeleteButton.Content = "Delete";
+        SetTextBoxesReadOnly(true);
+        PopulateFieldsFromSelected();
+        RefreshUi();
+    }
+
+    private void OnSaveClicked(object? sender, RoutedEventArgs e)
+    {
+        var flowName = FlowNameTextBox.Text?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(flowName))
+        {
+            StatusText.Text = "Flow Name is required.";
+            return;
+        }
+
+        if (_editingItem is null)
+        {
+            var newItem = new FlowListItem
+            {
+                FlowName = EnsureUniqueFlowName(flowName, null),
+                Source = SourceTextBox.Text?.Trim() ?? string.Empty,
+                Destination = DestinationTextBox.Text?.Trim() ?? string.Empty,
+                DataItems = DataItemsTextBox.Text?.Trim() ?? string.Empty,
+                DataRules = DataRulesTextBox.Text?.Trim() ?? string.Empty
+            };
+            _items.Add(newItem);
+            SaveItems();
+            ItemsListBox.SelectedItem = newItem;
+            StatusText.Text = "Flow created.";
+        }
+        else
+        {
+            _editingItem.FlowName = EnsureUniqueFlowName(flowName, _editingItem);
+            _editingItem.Source = SourceTextBox.Text?.Trim() ?? string.Empty;
+            _editingItem.Destination = DestinationTextBox.Text?.Trim() ?? string.Empty;
+            _editingItem.DataItems = DataItemsTextBox.Text?.Trim() ?? string.Empty;
+            _editingItem.DataRules = DataRulesTextBox.Text?.Trim() ?? string.Empty;
+            SaveItems();
+            ItemsListBox.ItemsSource = null;
+            ItemsListBox.ItemsSource = _items;
+            ItemsListBox.SelectedItem = _editingItem;
+            StatusText.Text = "Flow updated.";
+        }
+
+        _isEditMode = false;
+        _pendingDeleteConfirmation = false;
+        DeleteButton.Content = "Delete";
+        SetTextBoxesReadOnly(true);
+        RefreshUi();
+    }
+
+    private void LoadItems()
+    {
+        _items.Clear();
+        foreach (var item in FlowConfigurationStore.Load())
+        {
+            _items.Add(item);
+        }
+
+        ItemsListBox.SelectedItem = _items.FirstOrDefault();
+        _selectedItem = ItemsListBox.SelectedItem as FlowListItem;
+        _editingItem = _selectedItem;
+        PopulateFieldsFromSelected();
+    }
+
+    private void SaveItems()
+    {
+        FlowConfigurationStore.Save(_items);
+        FlowsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void PopulateFieldsFromSelected()
+    {
+        if (_selectedItem is null)
+        {
+            ClearFields();
+            return;
+        }
+
+        FlowNameTextBox.Text = _selectedItem.FlowName;
+        SourceTextBox.Text = _selectedItem.Source;
+        DestinationTextBox.Text = _selectedItem.Destination;
+        DataItemsTextBox.Text = _selectedItem.DataItems;
+        DataRulesTextBox.Text = _selectedItem.DataRules;
+    }
+
+    private void ClearFields()
+    {
         FlowNameTextBox.Text = string.Empty;
-        SourceConnectionTextBox.Text = string.Empty;
+        SourceTextBox.Text = string.Empty;
         DestinationTextBox.Text = string.Empty;
         DataItemsTextBox.Text = string.Empty;
         DataRulesTextBox.Text = string.Empty;
-        UpdateStepUi();
     }
 
-    private void OnBackStepClicked(object? sender, RoutedEventArgs e)
+    private void SetTextBoxesReadOnly(bool isReadOnly)
     {
-        if (_stepIndex == 0)
+        FlowNameTextBox.IsReadOnly = isReadOnly;
+        SourceTextBox.IsReadOnly = isReadOnly;
+        DestinationTextBox.IsReadOnly = isReadOnly;
+        DataItemsTextBox.IsReadOnly = isReadOnly;
+        DataRulesTextBox.IsReadOnly = isReadOnly;
+    }
+
+    private void RefreshUi()
+    {
+        var hasItems = _items.Count > 0;
+        EmptyStateText.IsVisible = !hasItems;
+        ItemsListBox.IsVisible = hasItems;
+
+        var hasSelection = _selectedItem is not null;
+        EditButton.IsEnabled = hasSelection && !_isEditMode;
+        CopyButton.IsEnabled = hasSelection && !_isEditMode;
+        DeleteButton.IsEnabled = hasSelection && !_isEditMode;
+        SaveButton.IsVisible = _isEditMode;
+        CancelEditButton.IsVisible = _isEditMode;
+
+        if (!_isEditMode && hasSelection)
         {
-            return;
+            StatusText.Text = "Select Edit to modify this flow.";
+        }
+        else if (!_isEditMode)
+        {
+            StatusText.Text = "Select a flow or click Add New.";
+        }
+    }
+
+    private string EnsureUniqueFlowName(string baseName, FlowListItem? currentItem)
+    {
+        var normalized = string.IsNullOrWhiteSpace(baseName) ? "Flow" : baseName.Trim();
+        if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.FlowName.Equals(normalized, StringComparison.OrdinalIgnoreCase)))
+        {
+            return normalized;
         }
 
-        _stepIndex--;
-        UpdateStepUi();
+        var suffix = 2;
+        while (true)
+        {
+            var candidate = $"{normalized} ({suffix})";
+            if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.FlowName.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
+            {
+                return candidate;
+            }
+
+            suffix++;
+        }
     }
 
-    private void OnNextStepClicked(object? sender, RoutedEventArgs e)
+    private string BuildUniqueName(string name, Func<FlowListItem, string> selector)
     {
-        if (_stepIndex >= 1)
+        var seed = string.IsNullOrWhiteSpace(name) ? "Flow" : name.Trim();
+        var candidate = $"{seed} Copy";
+        var suffix = 2;
+        while (_items.Any(item => selector(item).Equals(candidate, StringComparison.OrdinalIgnoreCase)))
         {
-            return;
+            candidate = $"{seed} Copy {suffix}";
+            suffix++;
         }
 
-        _stepIndex++;
-        UpdateStepUi();
-    }
-
-    private void OnSaveFlowClicked(object? sender, RoutedEventArgs e)
-    {
-        var details = new FlowDetailsInput
-        {
-            FlowName = FlowNameTextBox.Text?.Trim() ?? string.Empty,
-            SourceConnection = SourceConnectionTextBox.Text?.Trim() ?? string.Empty,
-            Destination = DestinationTextBox.Text?.Trim() ?? string.Empty,
-            DataItems = DataItemsTextBox.Text?.Trim() ?? string.Empty,
-            DataRules = DataRulesTextBox.Text?.Trim() ?? string.Empty
-        };
-
-        SaveRequested?.Invoke(this, details);
-    }
-
-    private void UpdateStepUi()
-    {
-        var isStepOne = _stepIndex == 0;
-        StepOnePanel.IsVisible = isStepOne;
-        StepTwoPanel.IsVisible = !isStepOne;
-        BackStepButton.IsEnabled = !isStepOne;
-        NextStepButton.IsVisible = isStepOne;
-        SaveFlowButton.IsVisible = !isStepOne;
-        StepDescriptionText.Text = isStepOne
-            ? "Step 1 of 2 - Basic flow setup"
-            : "Step 2 of 2 - Data settings";
+        return candidate;
     }
 }

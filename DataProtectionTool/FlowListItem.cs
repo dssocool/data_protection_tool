@@ -2,19 +2,19 @@ namespace DataProtectionTool;
 
 public sealed class FlowListItem
 {
-    public string FlowName { get; init; } = string.Empty;
+    public string FlowName { get; set; } = string.Empty;
 
-    public string Domain { get; init; } = "-";
+    public string Domain { get; set; } = "-";
 
-    public string Source { get; init; } = string.Empty;
+    public string Source { get; set; } = string.Empty;
 
-    public string Destination { get; init; } = string.Empty;
+    public string Destination { get; set; } = string.Empty;
 
-    public string Status { get; init; } = "Saved";
+    public string Status { get; set; } = "Saved";
 
-    public string Action { get; init; } = "Edit";
+    public string Action { get; set; } = "Edit";
 
-    public string DataItems { get; init; } = string.Empty;
+    public string DataItems { get; set; } = string.Empty;
 
-    public string DataRules { get; init; } = string.Empty;
+    public string DataRules { get; set; } = string.Empty;
 }
