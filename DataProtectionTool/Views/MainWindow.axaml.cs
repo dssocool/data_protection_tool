@@ -6,6 +6,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DataProtectionTool.Models;
+using DataProtectionTool.Services.Abstractions;
 using DataProtectionTool.Services;
 using System;
 using System.Collections.ObjectModel;
@@ -23,8 +24,9 @@ public partial class MainWindow : Window
         DataRules
     }
 
+    private readonly IDelphixApiService _delphixApiService;
     private readonly ObservableCollection<FlowListItem> _flows = [];
-    private readonly FlowsWizard _flowsWizard = new();
+    private readonly FlowsWizard _flowsWizard;
     private readonly ConnectionsWizard _connectionsWizard = new();
     private readonly DataItemsWizard _dataItemsWizard = new();
     private readonly DataRulesWizard _dataRulesWizard = new();
@@ -39,7 +41,14 @@ public partial class MainWindow : Window
     };
 
     public MainWindow()
+        : this(DelphixApiServiceResolver.CreateForCurrentMode())
     {
+    }
+
+    public MainWindow(IDelphixApiService delphixApiService)
+    {
+        _delphixApiService = delphixApiService ?? throw new ArgumentNullException(nameof(delphixApiService));
+        _flowsWizard = new FlowsWizard(_delphixApiService);
         InitializeComponent();
         _hoverExitTimer.Tick += OnHoverExitTimerTick;
         _flowsWizard.FlowsChanged += OnFlowsWizardChanged;

@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
+using DataProtectionTool.Services.Development;
 using DataProtectionTool.Views;
 using Xunit;
 
@@ -11,7 +12,7 @@ public class MainWindowModeLabelsTests
     [AvaloniaFact]
     public void ModeLabels_AppearInCorrectWorkspaces()
     {
-        var window = new MainWindow();
+        var window = new MainWindow(new FakeDelphixApiService());
         window.Show();
 
         var mainListPage = window.FindControl<Grid>("MainListPage");
