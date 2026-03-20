@@ -12,6 +12,34 @@
         MinHeight="600"
         KeyDown="OnWindowKeyDown"
         Background="#F4F7FB">
+    <Window.Styles>
+        <Style Selector="Button.top-icon-button">
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="38" />
+            <Setter Property="Background" Value="#EEF3FB" />
+            <Setter Property="BorderBrush" Value="#CBD8EA" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="#0B2D5C" />
+        </Style>
+        <Style Selector="Border.flow-row">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#E0E8F2" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Border.flow-row.hovered">
+            <Setter Property="Background" Value="#ECF3FF" />
+            <Setter Property="BorderBrush" Value="#6F96C7" />
+        </Style>
+        <Style Selector="Border.flow-row.selected">
+            <Setter Property="Background" Value="#DBE9FF" />
+            <Setter Property="BorderBrush" Value="#4B78B1" />
+            <Setter Property="BorderThickness" Value="1.5" />
+        </Style>
+    </Window.Styles>
+
     <Grid x:Name="RootLayoutGrid"
           Margin="24"
           ColumnSpacing="20">
@@ -22,9 +50,48 @@
 
         <Grid Grid.Column="0"
               RowDefinitions="Auto,16,Auto,12,*">
-            <Grid ColumnDefinitions="Auto,12,*">
-                <Button Grid.Column="0"
-                        Content="+ New Flow"
+            <Grid ColumnDefinitions="*,12,Auto,8,Auto,8,Auto,12,Auto">
+                <TextBox Grid.Column="0"
+                         Height="38"
+                         MinWidth="260"
+                         Watermark="Search flows..."
+                         HorizontalAlignment="Stretch" />
+
+                <Button Grid.Column="2"
+                        Classes="top-icon-button"
+                        ToolTip.Tip="Connections"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <PathIcon Width="18"
+                              Height="18"
+                              Data="M5,4 A2,2 0 1 1 5,8 A2,2 0 1 1 5,4 M17,10 A2,2 0 1 1 17,14 A2,2 0 1 1 17,10 M5,16 A2,2 0 1 1 5,20 A2,2 0 1 1 5,16 M7,6 L15,12 M7,18 L15,12"
+                              Foreground="#0B2D5C" />
+                </Button>
+
+                <Button Grid.Column="4"
+                        Classes="top-icon-button"
+                        ToolTip.Tip="Data Items"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <PathIcon Width="18"
+                              Height="18"
+                              Data="M4,5 L14,5 M4,10 L20,10 M4,15 L14,15 M4,20 L20,20 M16,5 L20,5 M16,15 L20,15"
+                              Foreground="#0B2D5C" />
+                </Button>
+
+                <Button Grid.Column="6"
+                        Classes="top-icon-button"
+                        ToolTip.Tip="Data Rules"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <PathIcon Width="18"
+                              Height="18"
+                              Data="M6,5 L18,5 L18,9 L6,9 Z M8,9 L16,9 L16,14 L8,14 Z M10,14 L14,14 L14,19 L10,19 Z"
+                              Foreground="#0B2D5C" />
+                </Button>
+
+                <Button Grid.Column="8"
+                        Content="New Item"
                         Height="38"
                         MinWidth="140"
                         Padding="16,0"
@@ -35,13 +102,7 @@
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"
                         Click="OnNewFlowClicked"
-                        HorizontalAlignment="Left" />
-
-                <TextBox Grid.Column="2"
-                         Height="38"
-                         MinWidth="260"
-                         Watermark="Search flows..."
-                         HorizontalAlignment="Stretch" />
+                        HorizontalAlignment="Right" />
             </Grid>
 
             <Border Grid.Row="2"
@@ -83,17 +144,12 @@
                 </Grid>
             </Border>
 
-            <Border x:Name="FlowListContainer"
-                    Grid.Row="4"
-                    CornerRadius="8"
-                    Background="#F9FBFE"
-                    BorderBrush="#DCE5F2"
-                    BorderThickness="1"
-                    Padding="20"
-                    PointerPressed="OnFlowListContainerPressed">
+            <Grid x:Name="FlowListContainer"
+                  Grid.Row="4"
+                  PointerPressed="OnFlowListContainerPressed">
                 <Grid>
                     <TextBlock x:Name="EmptyStateText"
-                               Text="No flows yet. Click &quot;+ New Flow&quot; to create your first flow."
+                               Text="No flows yet. Click &quot;New Item&quot; to create your first flow."
                                Foreground="#5E6A7D"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
@@ -108,12 +164,12 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="local:FlowListItem">
                                     <Border Margin="0,0,0,10"
-                                            Padding="12"
+                                            Classes="flow-row"
+                                            MinHeight="52"
+                                            Padding="16,12"
                                             CornerRadius="6"
-                                            Background="White"
-                                            BorderBrush="#E0E8F2"
-                                            BorderThickness="1"
                                             PointerEntered="OnFlowRowPointerEntered"
+                                            PointerExited="OnFlowRowPointerExited"
                                             PointerPressed="OnFlowRowPointerPressed">
                                         <Grid ColumnDefinitions="2.6*,1.4*,1.4*,1.6*,1.1*,0.9*"
                                               ColumnSpacing="16">
@@ -159,6 +215,8 @@
                                 BorderBrush="#9DB3D1"
                                 BorderThickness="1"
                                 CornerRadius="8"
+                                PointerEntered="OnPopoverPointerEntered"
+                                PointerExited="OnPopoverPointerExited"
                                 PointerPressed="OnPopoverPointerPressed">
                             <StackPanel Spacing="10">
                                 <TextBlock x:Name="PopoverTitleText"
@@ -223,7 +281,7 @@
                         </Border>
                     </Canvas>
                 </Grid>
-            </Border>
+            </Grid>
         </Grid>
 
         <Border x:Name="DetailsPanelHost"

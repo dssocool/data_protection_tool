@@ -3,9 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace DataProtectionTool;
 
@@ -13,11 +15,19 @@ public partial class MainWindow : Window
 {
     private readonly ObservableCollection<FlowListItem> _flows = [];
     private FlowListItem? _activePopoverFlow;
+    private FlowListItem? _hoveredFlow;
+    private FlowListItem? _selectedFlow;
     private bool _isPopoverPinned;
+    private bool _isPointerInsidePopover;
+    private readonly DispatcherTimer _hoverExitTimer = new()
+    {
+        Interval = TimeSpan.FromMilliseconds(140)
+    };
 
     public MainWindow()
     {
         InitializeComponent();
+        _hoverExitTimer.Tick += OnHoverExitTimerTick;
         FlowDetailsPanelControl.SaveRequested += OnSaveRequested;
         LoadSavedFlows();
     }
@@ -42,7 +52,16 @@ public partial class MainWindow : Window
 
     private void OnFlowRowPointerEntered(object? sender, PointerEventArgs e)
     {
-        if (_isPopoverPinned || sender is not Control row || row.DataContext is not FlowListItem flow)
+        if (sender is not Control row || row.DataContext is not FlowListItem flow)
+        {
+            return;
+        }
+
+        _hoveredFlow = flow;
+        UpdateRowHighlights();
+        CancelHoverExitTimer();
+
+        if (_isPopoverPinned)
         {
             return;
         }
@@ -51,12 +70,49 @@ public partial class MainWindow : Window
         ShowPopover(flow, row, mousePosition, pinned: false);
     }
 
+    private void OnFlowRowPointerExited(object? sender, PointerEventArgs e)
+    {
+        if (sender is not Control row || row.DataContext is not FlowListItem flow || _hoveredFlow != flow)
+        {
+            return;
+        }
+
+        _hoveredFlow = null;
+        UpdateRowHighlights();
+
+        if (_isPopoverPinned || _isPointerInsidePopover)
+        {
+            return;
+        }
+
+        _hoverExitTimer.Start();
+    }
+
+    private void OnPopoverPointerEntered(object? sender, PointerEventArgs e)
+    {
+        _isPointerInsidePopover = true;
+        CancelHoverExitTimer();
+    }
+
+    private void OnPopoverPointerExited(object? sender, PointerEventArgs e)
+    {
+        _isPointerInsidePopover = false;
+        if (!_isPopoverPinned && _hoveredFlow is null)
+        {
+            HidePopover();
+        }
+    }
+
     private void OnFlowRowPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Control row || row.DataContext is not FlowListItem flow)
         {
             return;
         }
+
+        _selectedFlow = flow;
+        _hoveredFlow = flow;
+        UpdateRowHighlights();
 
         var mousePosition = e.GetPosition(FlowPopoverCanvas);
         ShowPopover(flow, row, mousePosition, pinned: true);
@@ -71,7 +127,13 @@ public partial class MainWindow : Window
         }
 
         _isPopoverPinned = true;
+        if (_activePopoverFlow is not null)
+        {
+            _selectedFlow = _activePopoverFlow;
+            UpdateRowHighlights();
+        }
         PopoverPinnedHintText.IsVisible = true;
+        CancelHoverExitTimer();
         e.Handled = true;
     }
 
@@ -100,6 +162,8 @@ public partial class MainWindow : Window
         }
 
         UnpinPopover();
+        _selectedFlow = null;
+        UpdateRowHighlights();
         e.Handled = true;
     }
 
@@ -143,7 +207,11 @@ public partial class MainWindow : Window
         if (!hasFlows)
         {
             HidePopover();
+            _selectedFlow = null;
+            _hoveredFlow = null;
         }
+
+        UpdateRowHighlights();
     }
 
     private void ShowPopover(FlowListItem flow, Control rowControl, Point anchorPoint, bool pinned)
@@ -230,14 +298,22 @@ public partial class MainWindow : Window
     {
         _isPopoverPinned = false;
         PopoverPinnedHintText.IsVisible = false;
+        _isPointerInsidePopover = false;
+        CancelHoverExitTimer();
+        if (_hoveredFlow is null)
+        {
+            HidePopover();
+        }
     }
 
     private void HidePopover()
     {
         _activePopoverFlow = null;
         _isPopoverPinned = false;
+        _isPointerInsidePopover = false;
         PopoverPinnedHintText.IsVisible = false;
         FlowPopoverCanvas.IsVisible = false;
+        CancelHoverExitTimer();
     }
 
     private static Control? GetFlowRowFromSource(object? source)
@@ -269,5 +345,53 @@ public partial class MainWindow : Window
         }
 
         return false;
+    }
+
+    private void UpdateRowHighlights()
+    {
+        var flowRows = FlowListItemsControl.GetVisualDescendants()
+            .OfType<Border>()
+            .Where(row => row.Classes.Contains("flow-row"));
+
+        foreach (var row in flowRows)
+        {
+            if (row.DataContext is not FlowListItem flow)
+            {
+                row.Classes.Remove("hovered");
+                row.Classes.Remove("selected");
+                continue;
+            }
+
+            SetClass(row, "hovered", _hoveredFlow == flow);
+            SetClass(row, "selected", _selectedFlow == flow);
+        }
+    }
+
+    private static void SetClass(StyledElement element, string className, bool isEnabled)
+    {
+        if (isEnabled)
+        {
+            element.Classes.Add(className);
+            return;
+        }
+
+        element.Classes.Remove(className);
+    }
+
+    private void OnHoverExitTimerTick(object? sender, EventArgs e)
+    {
+        _hoverExitTimer.Stop();
+        if (!_isPopoverPinned && !_isPointerInsidePopover && _hoveredFlow is null)
+        {
+            HidePopover();
+        }
+    }
+
+    private void CancelHoverExitTimer()
+    {
+        if (_hoverExitTimer.IsEnabled)
+        {
+            _hoverExitTimer.Stop();
+        }
     }
 }
