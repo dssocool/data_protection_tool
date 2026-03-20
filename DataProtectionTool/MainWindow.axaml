@@ -60,13 +60,8 @@
     <Grid x:Name="RootLayoutGrid"
           Margin="24">
         <Grid x:Name="MainListPage"
-              RowDefinitions="Auto,12,*">
-            <TextBlock Text="Execution Workspace"
-                       FontSize="24"
-                       FontWeight="SemiBold"
-                       Foreground="#0B2D5C" />
-
-            <Grid Grid.Row="2"
+              RowDefinitions="*">
+            <Grid
                   ColumnDefinitions="74,16,*">
                 <Border Grid.Column="0"
                         Background="White"
@@ -80,9 +75,9 @@
                                 Classes="wizard-nav-icon-button selected"
                                 ToolTip.Tip="go to configuration workspace"
                                 Click="OnGoToConfigurationWorkspaceClicked">
-                            <PathIcon Width="20"
-                                      Height="20"
-                                      Data="M13,2 L6,13 H11 L9,22 L18,10 H13 Z" />
+                            <TextBlock Text="Edit"
+                                       FontSize="14"
+                                       FontWeight="SemiBold" />
                         </Button>
                         <Button x:Name="MainNavFlowsButton"
                                 Classes="wizard-nav-icon-button"
@@ -275,13 +270,8 @@
 
         <Grid x:Name="NewItemPage"
               IsVisible="False"
-              RowDefinitions="Auto,12,*">
-            <TextBlock Text="Configuration Workspace"
-                       FontSize="24"
-                       FontWeight="SemiBold"
-                       Foreground="#0B2D5C" />
-
-            <Grid Grid.Row="2"
+              RowDefinitions="*">
+            <Grid
                   ColumnDefinitions="74,16,*">
                 <Border Grid.Column="0"
                         Background="White"
@@ -295,9 +285,9 @@
                                 Classes="wizard-nav-icon-button"
                                 ToolTip.Tip="go to execution workspace"
                                 Click="OnMainListNavClicked">
-                            <PathIcon Width="20"
-                                      Height="20"
-                                      Data="M13,2 L6,13 H11 L9,22 L18,10 H13 Z" />
+                            <TextBlock Text="Run"
+                                       FontSize="14"
+                                       FontWeight="SemiBold" />
                         </Button>
                         <Button x:Name="NavFlowsButton"
                                 Classes="wizard-nav-icon-button selected"
