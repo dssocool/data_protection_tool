@@ -13,7 +13,19 @@ namespace DataProtectionTool;
 
 public partial class MainWindow : Window
 {
+    private enum WizardSection
+    {
+        Flows,
+        Connections,
+        DataItems,
+        DataRules
+    }
+
     private readonly ObservableCollection<FlowListItem> _flows = [];
+    private readonly FlowsWizard _flowsWizard = new();
+    private readonly ConnectionsWizard _connectionsWizard = new();
+    private readonly DataItemsWizard _dataItemsWizard = new();
+    private readonly DataRulesWizard _dataRulesWizard = new();
     private FlowListItem? _activePopoverFlow;
     private FlowListItem? _hoveredFlow;
     private FlowListItem? _selectedFlow;
@@ -28,26 +40,46 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _hoverExitTimer.Tick += OnHoverExitTimerTick;
-        FlowDetailsPanelControl.SaveRequested += OnSaveRequested;
+        _flowsWizard.SaveRequested += OnFlowsWizardSaveRequested;
+        WizardContentHost.Content = _flowsWizard;
         LoadSavedFlows();
+        ShowMainListPage();
     }
 
-    private void OnNewFlowClicked(object? sender, RoutedEventArgs e)
+    private void OnNewItemClicked(object? sender, RoutedEventArgs e)
     {
-        var isPanelOpen = DetailsPanelHost.IsVisible;
+        ShowNewItemPage();
+        SelectWizardSection(WizardSection.Flows, resetFlowWizard: true);
+    }
 
-        if (isPanelOpen)
-        {
-            RootLayoutGrid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
-            RootLayoutGrid.ColumnDefinitions[1].Width = new GridLength(0, GridUnitType.Pixel);
-            DetailsPanelHost.IsVisible = false;
-            return;
-        }
+    private void OnBackToMainClicked(object? sender, RoutedEventArgs e)
+    {
+        ShowMainListPage();
+    }
 
-        FlowDetailsPanelControl.SetCreationMode();
-        RootLayoutGrid.ColumnDefinitions[0].Width = new GridLength(2, GridUnitType.Star);
-        RootLayoutGrid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
-        DetailsPanelHost.IsVisible = true;
+    private void OnMainListNavClicked(object? sender, RoutedEventArgs e)
+    {
+        ShowMainListPage();
+    }
+
+    private void OnFlowsNavClicked(object? sender, RoutedEventArgs e)
+    {
+        SelectWizardSection(WizardSection.Flows);
+    }
+
+    private void OnConnectionsNavClicked(object? sender, RoutedEventArgs e)
+    {
+        SelectWizardSection(WizardSection.Connections);
+    }
+
+    private void OnDataItemsNavClicked(object? sender, RoutedEventArgs e)
+    {
+        SelectWizardSection(WizardSection.DataItems);
+    }
+
+    private void OnDataRulesNavClicked(object? sender, RoutedEventArgs e)
+    {
+        SelectWizardSection(WizardSection.DataRules);
     }
 
     private void OnFlowRowPointerEntered(object? sender, PointerEventArgs e)
@@ -167,7 +199,25 @@ public partial class MainWindow : Window
         e.Handled = true;
     }
 
-    private void OnSaveRequested(object? sender, FlowDetailsInput details)
+    private void OnFlowsWizardSaveRequested(object? sender, FlowDetailsInput details)
+    {
+        AddFlow(details);
+        _flowsWizard.ResetForCreate();
+        ShowMainListPage();
+    }
+
+    private void LoadSavedFlows()
+    {
+        foreach (var flow in FlowConfigurationStore.Load())
+        {
+            _flows.Add(flow);
+        }
+
+        FlowListItemsControl.ItemsSource = _flows;
+        UpdateListUiState();
+    }
+
+    private void AddFlow(FlowDetailsInput details)
     {
         if (string.IsNullOrWhiteSpace(details.FlowName))
         {
@@ -185,17 +235,6 @@ public partial class MainWindow : Window
 
         _flows.Add(item);
         FlowConfigurationStore.Save(_flows);
-        UpdateListUiState();
-    }
-
-    private void LoadSavedFlows()
-    {
-        foreach (var flow in FlowConfigurationStore.Load())
-        {
-            _flows.Add(flow);
-        }
-
-        FlowListItemsControl.ItemsSource = _flows;
         UpdateListUiState();
     }
 
@@ -393,5 +432,54 @@ public partial class MainWindow : Window
         {
             _hoverExitTimer.Stop();
         }
+    }
+
+    private void ShowMainListPage()
+    {
+        MainListPage.IsVisible = true;
+        NewItemPage.IsVisible = false;
+        UpdateWizardNavSelection(null);
+    }
+
+    private void ShowNewItemPage()
+    {
+        HidePopover();
+        _hoveredFlow = null;
+        _selectedFlow = null;
+        UpdateRowHighlights();
+        MainListPage.IsVisible = false;
+        NewItemPage.IsVisible = true;
+    }
+
+    private void SelectWizardSection(WizardSection section, bool resetFlowWizard = false)
+    {
+        if (!NewItemPage.IsVisible)
+        {
+            ShowNewItemPage();
+        }
+
+        if (section == WizardSection.Flows && resetFlowWizard)
+        {
+            _flowsWizard.ResetForCreate();
+        }
+
+        WizardContentHost.Content = section switch
+        {
+            WizardSection.Flows => _flowsWizard,
+            WizardSection.Connections => _connectionsWizard,
+            WizardSection.DataItems => _dataItemsWizard,
+            _ => _dataRulesWizard
+        };
+
+        UpdateWizardNavSelection(section);
+    }
+
+    private void UpdateWizardNavSelection(WizardSection? section)
+    {
+        SetClass(NavMainListButton, "selected", false);
+        SetClass(NavFlowsButton, "selected", section == WizardSection.Flows);
+        SetClass(NavConnectionsButton, "selected", section == WizardSection.Connections);
+        SetClass(NavDataItemsButton, "selected", section == WizardSection.DataItems);
+        SetClass(NavDataRulesButton, "selected", section == WizardSection.DataRules);
     }
 }

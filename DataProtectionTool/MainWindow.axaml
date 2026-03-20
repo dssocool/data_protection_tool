@@ -38,17 +38,27 @@
             <Setter Property="BorderBrush" Value="#4B78B1" />
             <Setter Property="BorderThickness" Value="1.5" />
         </Style>
+        <Style Selector="Button.wizard-nav-button">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Foreground" Value="#244268" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.wizard-nav-button.selected">
+            <Setter Property="Background" Value="#E5EEFC" />
+            <Setter Property="BorderBrush" Value="#AFC3E2" />
+            <Setter Property="Foreground" Value="#0B2D5C" />
+        </Style>
     </Window.Styles>
 
     <Grid x:Name="RootLayoutGrid"
-          Margin="24"
-          ColumnSpacing="20">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="0" />
-        </Grid.ColumnDefinitions>
-
-        <Grid Grid.Column="0"
+          Margin="24">
+        <Grid x:Name="MainListPage"
               RowDefinitions="Auto,16,Auto,12,*">
             <Grid ColumnDefinitions="*,12,Auto,8,Auto,8,Auto,12,Auto">
                 <TextBox Grid.Column="0"
@@ -91,7 +101,7 @@
                 </Button>
 
                 <Button Grid.Column="8"
-                        Content="New Item"
+                        Content="Create"
                         Height="38"
                         MinWidth="140"
                         Padding="16,0"
@@ -101,7 +111,7 @@
                         Foreground="White"
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"
-                        Click="OnNewFlowClicked"
+                        Click="OnNewItemClicked"
                         HorizontalAlignment="Right" />
             </Grid>
 
@@ -284,15 +294,66 @@
             </Grid>
         </Grid>
 
-        <Border x:Name="DetailsPanelHost"
-                Grid.Column="1"
-                IsVisible="False"
-                Background="White"
-                BorderBrush="#DCE5F2"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="16">
-            <local:FlowDetailsPanel x:Name="FlowDetailsPanelControl" />
-        </Border>
+        <Grid x:Name="NewItemPage"
+              IsVisible="False"
+              RowDefinitions="Auto,16,*">
+            <Grid ColumnDefinitions="Auto,12,*">
+                <Button Grid.Column="0"
+                        Content="Back"
+                        Width="96"
+                        Height="36"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Click="OnBackToMainClicked" />
+                <TextBlock Grid.Column="2"
+                           VerticalAlignment="Center"
+                           Text="New Item Workspace"
+                           FontSize="24"
+                           FontWeight="SemiBold"
+                           Foreground="#0B2D5C" />
+            </Grid>
+
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="220,16,*">
+                <Border Grid.Column="0"
+                        Background="White"
+                        BorderBrush="#D7E1EF"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="10">
+                    <StackPanel Spacing="6">
+                        <Button x:Name="NavMainListButton"
+                                Classes="wizard-nav-button"
+                                Content="Main/List"
+                                Click="OnMainListNavClicked" />
+                        <Button x:Name="NavFlowsButton"
+                                Classes="wizard-nav-button selected"
+                                Content="Flows"
+                                Click="OnFlowsNavClicked" />
+                        <Button x:Name="NavConnectionsButton"
+                                Classes="wizard-nav-button"
+                                Content="Connections"
+                                Click="OnConnectionsNavClicked" />
+                        <Button x:Name="NavDataItemsButton"
+                                Classes="wizard-nav-button"
+                                Content="Data Items"
+                                Click="OnDataItemsNavClicked" />
+                        <Button x:Name="NavDataRulesButton"
+                                Classes="wizard-nav-button"
+                                Content="Data Rules"
+                                Click="OnDataRulesNavClicked" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2"
+                        Background="#F9FBFE"
+                        BorderBrush="#D7E1EF"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="16">
+                    <ContentControl x:Name="WizardContentHost" />
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

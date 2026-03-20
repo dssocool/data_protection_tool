@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="760"
+             d:DesignHeight="560"
+             x:Class="DataProtectionTool.FlowsWizard">
+    <Grid RowDefinitions="Auto,8,Auto,18,*,16,Auto">
+        <TextBlock Text="Flow Wizard"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   Foreground="#0B2D5C" />
+
+        <TextBlock x:Name="StepDescriptionText"
+                   Grid.Row="2"
+                   FontSize="13"
+                   Foreground="#4C6388" />
+
+        <Border Grid.Row="4"
+                BorderBrush="#D7E1EF"
+                BorderThickness="1"
+                CornerRadius="10"
+                Background="White"
+                Padding="16">
+            <Grid>
+                <StackPanel x:Name="StepOnePanel"
+                            Spacing="12">
+                    <TextBox x:Name="FlowNameTextBox"
+                             Height="38"
+                             Watermark="Flow Name" />
+                    <TextBox x:Name="SourceConnectionTextBox"
+                             Height="38"
+                             Watermark="Source Connection" />
+                    <TextBox x:Name="DestinationTextBox"
+                             Height="38"
+                             Watermark="Destination" />
+                </StackPanel>
+
+                <StackPanel x:Name="StepTwoPanel"
+                            IsVisible="False"
+                            Spacing="12">
+                    <TextBox x:Name="DataItemsTextBox"
+                             Height="38"
+                             Watermark="Data Items" />
+                    <TextBox x:Name="DataRulesTextBox"
+                             Height="38"
+                             Watermark="Data Rules" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="6"
+              ColumnDefinitions="Auto,8,Auto,*,Auto">
+            <Button x:Name="BackStepButton"
+                    Grid.Column="0"
+                    Content="Back"
+                    Width="100"
+                    Height="36"
+                    IsEnabled="False"
+                    Click="OnBackStepClicked" />
+
+            <Button x:Name="NextStepButton"
+                    Grid.Column="2"
+                    Content="Next"
+                    Width="100"
+                    Height="36"
+                    Click="OnNextStepClicked" />
+
+            <Button x:Name="SaveFlowButton"
+                    Grid.Column="4"
+                    Content="Save Flow"
+                    Width="120"
+                    Height="36"
+                    IsVisible="False"
+                    Background="#0B2D5C"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    Click="OnSaveFlowClicked" />
+        </Grid>
+    </Grid>
+</UserControl>

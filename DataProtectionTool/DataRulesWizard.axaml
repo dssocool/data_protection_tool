@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="760"
+             d:DesignHeight="560"
+             x:Class="DataProtectionTool.DataRulesWizard">
+    <StackPanel Spacing="14">
+        <TextBlock Text="Data Rules Wizard"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   Foreground="#0B2D5C" />
+        <TextBlock Text="Scaffold mode: define policy/rule templates in upcoming steps."
+                   Foreground="#4C6388"
+                   TextWrapping="Wrap" />
+        <Border BorderBrush="#D7E1EF"
+                BorderThickness="1"
+                CornerRadius="10"
+                Background="White"
+                Padding="16">
+            <StackPanel Spacing="12">
+                <TextBox Height="38" Watermark="Rule Name" />
+                <TextBox Height="38" Watermark="Rule Description" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>
