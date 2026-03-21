@@ -75,6 +75,10 @@ For manual testing with `curl`, run the minimal mock that implements `POST /mask
 dotnet run --project DataProtectionTool.MockServer/DataProtectionTool.MockServer.csproj
 ```
 
+Swagger UI is available at:
+
+- `http://localhost:5057/swagger`
+
 Default URL: `http://localhost:5057`. Override with `--urls`, for example:
 
 ```bash
