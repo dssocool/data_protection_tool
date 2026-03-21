@@ -19,7 +19,7 @@ dotnet --version
 `Debug` builds run in fake mode by default.
 
 ```bash
-dotnet run --project DataProtectionTool/DataProtectionTool.csproj -c Debug
+dotnet run --project DataProtectionTool.ClientApp/DataProtectionTool.ClientApp.csproj -c Debug
 ```
 
 ### Production mode (real Delphix service)
@@ -27,7 +27,7 @@ dotnet run --project DataProtectionTool/DataProtectionTool.csproj -c Debug
 `Release` builds run in real mode by default.
 
 ```bash
-dotnet run --project DataProtectionTool/DataProtectionTool.csproj -c Release
+dotnet run --project DataProtectionTool.ClientApp/DataProtectionTool.ClientApp.csproj -c Release
 ```
 
 ## Force Mode With Environment Variable
@@ -46,25 +46,25 @@ Allowed values:
 Run in fake mode:
 
 ```bash
-DATA_PROTECTION_TOOL_DELPHIX_MODE=fake dotnet run --project DataProtectionTool/DataProtectionTool.csproj -c Release
+DATA_PROTECTION_TOOL_DELPHIX_MODE=fake dotnet run --project DataProtectionTool.ClientApp/DataProtectionTool.ClientApp.csproj -c Release
 ```
 
 Run in real mode:
 
 ```bash
-DATA_PROTECTION_TOOL_DELPHIX_MODE=real dotnet run --project DataProtectionTool/DataProtectionTool.csproj -c Debug
+DATA_PROTECTION_TOOL_DELPHIX_MODE=real dotnet run --project DataProtectionTool.ClientApp/DataProtectionTool.ClientApp.csproj -c Debug
 ```
 
 ### Windows PowerShell
 
 ```powershell
 $env:DATA_PROTECTION_TOOL_DELPHIX_MODE = "fake"
-dotnet run --project DataProtectionTool/DataProtectionTool.csproj -c Release
+dotnet run --project DataProtectionTool.ClientApp/DataProtectionTool.ClientApp.csproj -c Release
 ```
 
 ```powershell
 $env:DATA_PROTECTION_TOOL_DELPHIX_MODE = "real"
-dotnet run --project DataProtectionTool/DataProtectionTool.csproj -c Debug
+dotnet run --project DataProtectionTool.ClientApp/DataProtectionTool.ClientApp.csproj -c Debug
 ```
 
 ## Mock Delphix HTTP server (local)
