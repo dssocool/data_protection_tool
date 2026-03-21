@@ -41,7 +41,10 @@ var app = builder.Build();
 const string FileFormatsPath = "/masking/api/v5.1.44/file-formats";
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+{
+    options.EnableTryItOutByDefault();
+});
 
 app.MapPost(FileFormatsPath, IResult (
     HttpRequest request,
