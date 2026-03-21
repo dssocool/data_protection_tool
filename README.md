@@ -12,6 +12,52 @@ Verify your SDK:
 dotnet --version
 ```
 
+## Solution
+
+Build everything from the repo root:
+
+```bash
+dotnet build DataProtectionTool.sln
+```
+
+## gRPC Master (coordination server)
+
+`DataProtectionTool.Master` hosts the gRPC API defined in [DataProtectionTool.Contracts/Protos/master.proto](DataProtectionTool.Contracts/Protos/master.proto). The desktop client generates **client** stubs from the same proto; the master generates **server** stubs (`GrpcServices="Client"` / `GrpcServices="Server"` in each `.csproj`).
+
+### Run master locally (no Docker)
+
+Default HTTP URL (HTTP/2 cleartext for gRPC + HTTP/1 for `GET /`):
+
+- `http://localhost:5055` (from [launchSettings](DataProtectionTool.Master/Properties/launchSettings.json))
+
+```bash
+dotnet run --project DataProtectionTool.Master/DataProtectionTool.Master.csproj
+```
+
+If neither `ASPNETCORE_URLS` nor `PORT` is set, the app listens on **`http://0.0.0.0:5055`**, which matches local development and works in containers that set `PORT` (for example Azure Container Apps).
+
+### Point the desktop client at master
+
+The Avalonia app sends a startup `Ping` to the master (non-blocking; failures are traced).
+
+Override the base URL with:
+
+`DATA_PROTECTION_TOOL_MASTER_URL`
+
+Example (macOS / Linux):
+
+```bash
+DATA_PROTECTION_TOOL_MASTER_URL=http://localhost:5055 dotnet run --project DataProtectionTool.ClientApp/DataProtectionTool.ClientApp.csproj
+```
+
+Default when unset: `http://localhost:5055`.
+
+### Azure Container Apps
+
+- Set **`PORT`** to the port your ingress targets (Container Apps sets this automatically in many setups), **or** set **`ASPNETCORE_URLS`** (for example `http://0.0.0.0:8080`).
+- Run the container with `dotnet DataProtectionTool.Master.dll` (publish output) or your chosen entrypoint.
+- Configure the client’s `DATA_PROTECTION_TOOL_MASTER_URL` to the reachable master URL (often `https://...` if TLS terminates at ingress; use `http://...` only when your platform allows HTTP/2 or you terminate TLS appropriately).
+
 ## Run The App
 
 ### Development mode (fake Delphix service)
@@ -115,6 +161,12 @@ Run all tests:
 
 ```bash
 dotnet test DataProtectionTool.Tests/DataProtectionTool.Tests.csproj
+```
+
+Or from the solution:
+
+```bash
+dotnet test DataProtectionTool.sln
 ```
 
 Run tests with detailed output:

@@ -3,6 +3,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using DataProtectionTool.ClientApp.Services;
 using DataProtectionTool.ClientApp.Views;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace DataProtectionTool.ClientApp;
 
@@ -21,6 +24,18 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow();
         }
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await MasterGrpcClient.TryPingAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"[Master] Ping failed (is DataProtectionTool.Master running?): {ex.Message}");
+            }
+        });
 
         base.OnFrameworkInitializationCompleted();
     }
