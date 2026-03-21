@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using DataProtectionTool.Models;
-using DataProtectionTool.Services.Abstractions;
 using DataProtectionTool.Services;
 using System;
 using System.Collections.ObjectModel;
@@ -12,7 +11,6 @@ namespace DataProtectionTool.Views;
 
 public partial class FlowsWizard : UserControl
 {
-    private readonly IDelphixApiService _delphixApiService;
     private readonly ObservableCollection<FlowListItem> _items = [];
     private FlowListItem? _selectedItem;
     private FlowListItem? _editingItem;
@@ -22,13 +20,7 @@ public partial class FlowsWizard : UserControl
     public event EventHandler? FlowsChanged;
 
     public FlowsWizard()
-        : this(DelphixApiServiceResolver.CreateForCurrentMode())
     {
-    }
-
-    public FlowsWizard(IDelphixApiService delphixApiService)
-    {
-        _delphixApiService = delphixApiService ?? throw new ArgumentNullException(nameof(delphixApiService));
         InitializeComponent();
         ItemsListBox.ItemsSource = _items;
         LoadItems();
