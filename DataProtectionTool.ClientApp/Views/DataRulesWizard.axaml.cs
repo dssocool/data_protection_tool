@@ -2,16 +2,16 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using DataProtectionTool.ClientApp.Models;
-using DataProtectionTool.ClientApp.Services;
+using DataProtectionTool.ClientApp.ViewModels;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace DataProtectionTool.ClientApp.Views;
 
 public partial class DataRulesWizard : UserControl
 {
-    private readonly ObservableCollection<DataRuleRecord> _items = [];
+    private readonly DataRulesWizardViewModel _viewModel = new();
+    private readonly ObservableCollection<DataRuleRecord> _items;
     private DataRuleRecord? _selectedItem;
     private DataRuleRecord? _editingItem;
     private bool _isEditMode;
@@ -20,6 +20,8 @@ public partial class DataRulesWizard : UserControl
     public DataRulesWizard()
     {
         InitializeComponent();
+        DataContext = _viewModel;
+        _items = _viewModel.Items;
         ItemsListBox.ItemsSource = _items;
         LoadItems();
         RefreshUi();
@@ -186,11 +188,7 @@ public partial class DataRulesWizard : UserControl
 
     private void LoadItems()
     {
-        _items.Clear();
-        foreach (var item in DataRuleConfigurationStore.Load())
-        {
-            _items.Add(item);
-        }
+        _viewModel.LoadItems();
 
         ItemsListBox.SelectedItem = null;
         _selectedItem = null;
@@ -200,7 +198,7 @@ public partial class DataRulesWizard : UserControl
 
     private void SaveItems()
     {
-        DataRuleConfigurationStore.Save(_items);
+        _viewModel.SaveItems();
     }
 
     private void PopulateFieldsFromSelected()
@@ -259,36 +257,11 @@ public partial class DataRulesWizard : UserControl
 
     private string BuildUniqueName(string originalName)
     {
-        var seed = string.IsNullOrWhiteSpace(originalName) ? "Rule" : originalName.Trim();
-        var candidate = $"{seed} Copy";
-        var suffix = 2;
-        while (_items.Any(item => item.RuleName.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
-        {
-            candidate = $"{seed} Copy {suffix}";
-            suffix++;
-        }
-
-        return candidate;
+        return _viewModel.BuildUniqueName(originalName);
     }
 
     private string EnsureUniqueName(string baseName, DataRuleRecord? currentItem)
     {
-        var normalized = string.IsNullOrWhiteSpace(baseName) ? "Rule" : baseName.Trim();
-        if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.RuleName.Equals(normalized, StringComparison.OrdinalIgnoreCase)))
-        {
-            return normalized;
-        }
-
-        var suffix = 2;
-        while (true)
-        {
-            var candidate = $"{normalized} ({suffix})";
-            if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.RuleName.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
-            {
-                return candidate;
-            }
-
-            suffix++;
-        }
+        return _viewModel.EnsureUniqueName(baseName, currentItem);
     }
 }

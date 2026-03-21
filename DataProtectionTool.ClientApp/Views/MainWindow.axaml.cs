@@ -6,7 +6,7 @@ using Avalonia.LogicalTree;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DataProtectionTool.ClientApp.Models;
-using DataProtectionTool.ClientApp.Services;
+using DataProtectionTool.ClientApp.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,6 +15,7 @@ namespace DataProtectionTool.ClientApp.Views;
 
 public partial class MainWindow : Window
 {
+    private readonly MainWindowViewModel _viewModel = new();
     private enum WizardSection
     {
         Flows,
@@ -23,7 +24,7 @@ public partial class MainWindow : Window
         DataRules
     }
 
-    private readonly ObservableCollection<FlowListItem> _flows = [];
+    private readonly ObservableCollection<FlowListItem> _flows;
     private readonly FlowsWizard _flowsWizard = new();
     private readonly ConnectionsWizard _connectionsWizard = new();
     private readonly DataItemsWizard _dataItemsWizard = new();
@@ -41,6 +42,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        DataContext = _viewModel;
+        _flows = _viewModel.Flows;
         _hoverExitTimer.Tick += OnHoverExitTimerTick;
         _flowsWizard.FlowsChanged += OnFlowsWizardChanged;
         WizardContentHost.Content = _flowsWizard;
@@ -218,11 +221,7 @@ public partial class MainWindow : Window
 
     private void LoadSavedFlows()
     {
-        _flows.Clear();
-        foreach (var flow in FlowConfigurationStore.Load())
-        {
-            _flows.Add(flow);
-        }
+        _viewModel.LoadSavedFlows();
 
         FlowListItemsControl.ItemsSource = _flows;
         UpdateListUiState();
@@ -245,7 +244,7 @@ public partial class MainWindow : Window
         };
 
         _flows.Add(item);
-        FlowConfigurationStore.Save(_flows);
+        _viewModel.SaveFlows();
         UpdateListUiState();
     }
 

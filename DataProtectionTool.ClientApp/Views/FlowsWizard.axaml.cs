@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using DataProtectionTool.ClientApp.Models;
-using DataProtectionTool.ClientApp.Services;
+using DataProtectionTool.ClientApp.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,7 +11,8 @@ namespace DataProtectionTool.ClientApp.Views;
 
 public partial class FlowsWizard : UserControl
 {
-    private readonly ObservableCollection<FlowListItem> _items = [];
+    private readonly FlowsWizardViewModel _viewModel = new();
+    private readonly ObservableCollection<FlowListItem> _items;
     private FlowListItem? _selectedItem;
     private FlowListItem? _editingItem;
     private bool _isEditMode;
@@ -22,6 +23,8 @@ public partial class FlowsWizard : UserControl
     public FlowsWizard()
     {
         InitializeComponent();
+        DataContext = _viewModel;
+        _items = _viewModel.Items;
         ItemsListBox.ItemsSource = _items;
         LoadItems();
         RefreshUi();
@@ -208,11 +211,7 @@ public partial class FlowsWizard : UserControl
 
     private void LoadItems()
     {
-        _items.Clear();
-        foreach (var item in FlowConfigurationStore.Load())
-        {
-            _items.Add(item);
-        }
+        _viewModel.LoadItems();
 
         ItemsListBox.SelectedItem = null;
         _selectedItem = null;
@@ -222,7 +221,7 @@ public partial class FlowsWizard : UserControl
 
     private void SaveItems()
     {
-        FlowConfigurationStore.Save(_items);
+        _viewModel.SaveItems();
         FlowsChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -285,36 +284,11 @@ public partial class FlowsWizard : UserControl
 
     private string EnsureUniqueFlowName(string baseName, FlowListItem? currentItem)
     {
-        var normalized = string.IsNullOrWhiteSpace(baseName) ? "Flow" : baseName.Trim();
-        if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.FlowName.Equals(normalized, StringComparison.OrdinalIgnoreCase)))
-        {
-            return normalized;
-        }
-
-        var suffix = 2;
-        while (true)
-        {
-            var candidate = $"{normalized} ({suffix})";
-            if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.FlowName.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
-            {
-                return candidate;
-            }
-
-            suffix++;
-        }
+        return _viewModel.EnsureUniqueFlowName(baseName, currentItem);
     }
 
     private string BuildUniqueName(string name, Func<FlowListItem, string> selector)
     {
-        var seed = string.IsNullOrWhiteSpace(name) ? "Flow" : name.Trim();
-        var candidate = $"{seed} Copy";
-        var suffix = 2;
-        while (_items.Any(item => selector(item).Equals(candidate, StringComparison.OrdinalIgnoreCase)))
-        {
-            candidate = $"{seed} Copy {suffix}";
-            suffix++;
-        }
-
-        return candidate;
+        return _viewModel.BuildUniqueName(name, selector);
     }
 }

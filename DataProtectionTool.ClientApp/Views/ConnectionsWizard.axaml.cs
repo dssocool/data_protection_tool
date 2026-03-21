@@ -1,28 +1,25 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Azure;
-using Azure.Storage.Blobs;
 using DataProtectionTool.ClientApp.Models;
-using DataProtectionTool.ClientApp.Services;
-using Microsoft.Data.SqlClient;
+using DataProtectionTool.ClientApp.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataProtectionTool.ClientApp.Views;
 
 public partial class ConnectionsWizard : UserControl
 {
-    private const string SqlServerType = "Microsoft SQL Server";
-    private const string FabricType = "Azure Fabric";
-    private const string BlobType = "Azure Blob Storage";
-    private const string EntraAuthType = "Entra";
-    private const string SqlServerAuthType = "SQL Server";
+    private const string SqlServerType = ConnectionsWizardViewModel.SqlServerType;
+    private const string FabricType = ConnectionsWizardViewModel.FabricType;
+    private const string BlobType = ConnectionsWizardViewModel.BlobType;
+    private const string EntraAuthType = ConnectionsWizardViewModel.EntraAuthType;
+    private const string SqlServerAuthType = ConnectionsWizardViewModel.SqlServerAuthType;
 
-    private readonly ObservableCollection<ConnectionItem> _items = [];
+    private readonly ConnectionsWizardViewModel _viewModel = new();
+    private readonly ObservableCollection<ConnectionItem> _items;
     private ConnectionItem? _selectedItem;
     private ConnectionItem? _editingItem;
     private bool _isEditMode;
@@ -34,6 +31,8 @@ public partial class ConnectionsWizard : UserControl
     public ConnectionsWizard()
     {
         InitializeComponent();
+        DataContext = _viewModel;
+        _items = _viewModel.Items;
         ItemsListBox.ItemsSource = _items;
         SqlAuthenticationComboBox.ItemsSource = new[] { EntraAuthType, SqlServerAuthType };
         SqlAuthenticationComboBox.SelectedItem = SqlServerAuthType;
@@ -260,11 +259,7 @@ public partial class ConnectionsWizard : UserControl
 
     private void LoadItems()
     {
-        _items.Clear();
-        foreach (var item in ConnectionConfigurationStore.Load())
-        {
-            _items.Add(item);
-        }
+        _viewModel.LoadItems();
 
         ItemsListBox.SelectedItem = null;
         _selectedItem = null;
@@ -274,7 +269,7 @@ public partial class ConnectionsWizard : UserControl
 
     private void SaveItems()
     {
-        ConnectionConfigurationStore.Save(_items);
+        _viewModel.SaveItems();
     }
 
     private void PopulateFieldsFromSelected()
@@ -437,121 +432,28 @@ public partial class ConnectionsWizard : UserControl
 
     private async Task<bool> ValidateConnectionAsync()
     {
-        try
-        {
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(12));
-            var token = cts.Token;
-
-            return _selectedConnectionType switch
-            {
-                SqlServerType => await ValidateSqlConnectionAsync(token),
-                FabricType => await ValidateFabricConnectionAsync(token),
-                BlobType => await ValidateBlobConnectionAsync(token),
-                _ => false
-            };
-        }
-        catch (OperationCanceledException)
-        {
-            StatusText.Text = "Validation timed out.";
-            return false;
-        }
-        catch (RequestFailedException ex)
-        {
-            StatusText.Text = $"Validation failed: {ex.Message}";
-            return false;
-        }
-        catch (SqlException ex)
-        {
-            StatusText.Text = $"Validation failed: {ex.Message}";
-            return false;
-        }
-        catch (Exception ex)
-        {
-            StatusText.Text = $"Validation failed: {ex.Message}";
-            return false;
-        }
+        var draft = BuildDraftFromInput();
+        var result = await _viewModel.ValidateConnectionAsync(draft, _selectedConnectionType, SelectedAuthenticationType);
+        StatusText.Text = result.Message;
+        return result.IsValid;
     }
 
-    private async Task<bool> ValidateSqlConnectionAsync(CancellationToken cancellationToken)
+    private ConnectionItem BuildDraftFromInput()
     {
-        var serverName = SqlServerNameTextBox.Text?.Trim() ?? string.Empty;
-        var database = SqlDatabaseTextBox.Text?.Trim() ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(serverName) || string.IsNullOrWhiteSpace(database))
+        return new ConnectionItem
         {
-            StatusText.Text = "Server Name and Database are required for SQL Server.";
-            return false;
-        }
-
-        var builder = new SqlConnectionStringBuilder
-        {
-            DataSource = serverName,
-            InitialCatalog = database,
-            Encrypt = true,
-            TrustServerCertificate = true,
-            ConnectTimeout = 12
+            Name = NameTextBox.Text?.Trim() ?? string.Empty,
+            Type = _selectedConnectionType,
+            SqlServerName = SqlServerNameTextBox.Text?.Trim() ?? string.Empty,
+            SqlAuthenticationType = SelectedAuthenticationType,
+            SqlUserName = SqlUserNameTextBox.Text?.Trim() ?? string.Empty,
+            SqlPassword = SqlPasswordBox.Text?.Trim() ?? string.Empty,
+            SqlDatabase = SqlDatabaseTextBox.Text?.Trim() ?? string.Empty,
+            FabricConnectionString = FabricConnectionStringTextBox.Text?.Trim() ?? string.Empty,
+            BlobStorageAccount = BlobStorageAccountTextBox.Text?.Trim() ?? string.Empty,
+            BlobContainer = BlobContainerTextBox.Text?.Trim() ?? string.Empty,
+            BlobAccessKey = BlobAccessKeyBox.Text?.Trim() ?? string.Empty
         };
-
-        if (SelectedAuthenticationType == EntraAuthType)
-        {
-            builder.Authentication = SqlAuthenticationMethod.ActiveDirectoryDefault;
-        }
-        else
-        {
-            var userName = SqlUserNameTextBox.Text?.Trim() ?? string.Empty;
-            var password = SqlPasswordBox.Text?.Trim() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
-            {
-                StatusText.Text = "User Name and Password are required for SQL Server authentication.";
-                return false;
-            }
-
-            builder.UserID = userName;
-            builder.Password = password;
-        }
-
-        await using var connection = new SqlConnection(builder.ConnectionString);
-        await connection.OpenAsync(cancellationToken);
-        return true;
-    }
-
-    private async Task<bool> ValidateFabricConnectionAsync(CancellationToken cancellationToken)
-    {
-        var connectionString = FabricConnectionStringTextBox.Text?.Trim() ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            StatusText.Text = "Connection String is required for Azure Fabric.";
-            return false;
-        }
-
-        await using var connection = new SqlConnection(connectionString);
-        await connection.OpenAsync(cancellationToken);
-        return true;
-    }
-
-    private async Task<bool> ValidateBlobConnectionAsync(CancellationToken cancellationToken)
-    {
-        var storageAccount = BlobStorageAccountTextBox.Text?.Trim() ?? string.Empty;
-        var container = BlobContainerTextBox.Text?.Trim() ?? string.Empty;
-        var accessKey = BlobAccessKeyBox.Text?.Trim() ?? string.Empty;
-
-        if (string.IsNullOrWhiteSpace(storageAccount)
-            || string.IsNullOrWhiteSpace(container)
-            || string.IsNullOrWhiteSpace(accessKey))
-        {
-            StatusText.Text = "Storage Account, Container, and Access Key are required for Azure Blob.";
-            return false;
-        }
-
-        var connectionString = $"DefaultEndpointsProtocol=https;AccountName={storageAccount};AccountKey={accessKey};EndpointSuffix=core.windows.net";
-        var containerClient = new BlobContainerClient(connectionString, container);
-        var exists = await containerClient.ExistsAsync(cancellationToken);
-        if (!exists.Value)
-        {
-            StatusText.Text = "Validation failed: container does not exist.";
-            return false;
-        }
-
-        return true;
     }
 
     private void ApplyFieldsToItem(ConnectionItem item)
@@ -569,15 +471,9 @@ public partial class ConnectionsWizard : UserControl
         item.Endpoint = BuildEndpoint(item);
     }
 
-    private static string BuildEndpoint(ConnectionItem item)
+    private string BuildEndpoint(ConnectionItem item)
     {
-        return item.Type switch
-        {
-            SqlServerType => item.SqlServerName,
-            FabricType => item.FabricConnectionString,
-            BlobType => item.BlobStorageAccount,
-            _ => string.Empty
-        };
+        return _viewModel.BuildEndpoint(item, item.Type);
     }
 
     private void ResetValidationState()
@@ -603,63 +499,23 @@ public partial class ConnectionsWizard : UserControl
         element.Classes.Remove(className);
     }
 
-    private static string NormalizeType(string? type)
+    private string NormalizeType(string? type)
     {
-        if (string.Equals(type, FabricType, StringComparison.OrdinalIgnoreCase))
-        {
-            return FabricType;
-        }
-
-        if (string.Equals(type, BlobType, StringComparison.OrdinalIgnoreCase))
-        {
-            return BlobType;
-        }
-
-        return SqlServerType;
+        return _viewModel.NormalizeType(type);
     }
 
-    private static string NormalizeAuthType(string? authType)
+    private string NormalizeAuthType(string? authType)
     {
-        if (string.Equals(authType, EntraAuthType, StringComparison.OrdinalIgnoreCase))
-        {
-            return EntraAuthType;
-        }
-
-        return SqlServerAuthType;
+        return _viewModel.NormalizeAuthType(authType);
     }
 
     private string BuildUniqueName(string originalName)
     {
-        var seed = string.IsNullOrWhiteSpace(originalName) ? "Connection" : originalName.Trim();
-        var candidate = $"{seed} Copy";
-        var suffix = 2;
-        while (_items.Any(item => item.Name.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
-        {
-            candidate = $"{seed} Copy {suffix}";
-            suffix++;
-        }
-
-        return candidate;
+        return _viewModel.BuildUniqueName(originalName);
     }
 
     private string EnsureUniqueName(string baseName, ConnectionItem? currentItem)
     {
-        var normalized = string.IsNullOrWhiteSpace(baseName) ? "Connection" : baseName.Trim();
-        if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.Name.Equals(normalized, StringComparison.OrdinalIgnoreCase)))
-        {
-            return normalized;
-        }
-
-        var suffix = 2;
-        while (true)
-        {
-            var candidate = $"{normalized} ({suffix})";
-            if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.Name.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
-            {
-                return candidate;
-            }
-
-            suffix++;
-        }
+        return _viewModel.EnsureUniqueName(baseName, currentItem);
     }
 }

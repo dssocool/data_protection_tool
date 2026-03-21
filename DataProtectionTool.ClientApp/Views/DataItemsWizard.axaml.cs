@@ -2,10 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
-using Azure.Storage.Blobs;
 using DataProtectionTool.ClientApp.Models;
-using DataProtectionTool.ClientApp.Services;
-using Microsoft.Data.SqlClient;
+using DataProtectionTool.ClientApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,16 +15,12 @@ namespace DataProtectionTool.ClientApp.Views;
 
 public partial class DataItemsWizard : UserControl
 {
-    private const string SqlServerType = "Microsoft SQL Server";
-    private const string FabricType = "Azure Fabric";
-    private const string BlobType = "Azure Blob Storage";
-    private const string EntraAuthType = "Entra";
-
-    private readonly ObservableCollection<DataItemRecord> _items = [];
+    private readonly DataItemsWizardViewModel _viewModel = new();
+    private readonly ObservableCollection<DataItemRecord> _items;
     private readonly ObservableCollection<ConnectionChip> _selectedConnectionChips = [];
     private readonly ObservableCollection<ConnectionSuggestion> _connectionSuggestions = [];
     private readonly ObservableCollection<ConnectionItemsPickerModel> _connectionItemPickers = [];
-    private readonly Dictionary<string, ConnectionItem> _connectionsByName = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, ConnectionItem> _connectionsByName;
 
     private DataItemRecord? _selectedItem;
     private DataItemRecord? _editingItem;
@@ -37,6 +31,9 @@ public partial class DataItemsWizard : UserControl
     public DataItemsWizard()
     {
         InitializeComponent();
+        DataContext = _viewModel;
+        _items = _viewModel.Items;
+        _connectionsByName = _viewModel.ConnectionsByName;
         ItemsListBox.ItemsSource = _items;
         SelectedConnectionsItemsControl.ItemsSource = _selectedConnectionChips;
         ConnectionSuggestionsListBox.ItemsSource = _connectionSuggestions;
@@ -419,28 +416,7 @@ public partial class DataItemsWizard : UserControl
 
     private void LoadItems()
     {
-        _items.Clear();
-        foreach (var item in DataItemConfigurationStore.Load())
-        {
-            if (item.SelectedConnections.Count == 0 && !string.IsNullOrWhiteSpace(item.Source))
-            {
-                item.SelectedConnections = item.Source
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                    .Where(static part => !string.IsNullOrWhiteSpace(part))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-            }
-
-            if (item.SelectedItemConnections.Count < item.SelectedItems.Count)
-            {
-                while (item.SelectedItemConnections.Count < item.SelectedItems.Count)
-                {
-                    item.SelectedItemConnections.Add(string.Empty);
-                }
-            }
-
-            _items.Add(item);
-        }
+        _viewModel.LoadItems();
 
         ItemsListBox.SelectedItem = null;
         _selectedItem = null;
@@ -450,21 +426,12 @@ public partial class DataItemsWizard : UserControl
 
     private void SaveItems()
     {
-        DataItemConfigurationStore.Save(_items);
+        _viewModel.SaveItems();
     }
 
     private void LoadConnections()
     {
-        _connectionsByName.Clear();
-        foreach (var connection in ConnectionConfigurationStore.Load())
-        {
-            if (string.IsNullOrWhiteSpace(connection.Name))
-            {
-                continue;
-            }
-
-            _connectionsByName[connection.Name] = connection;
-        }
+        _viewModel.LoadConnections();
     }
 
     private void PopulateFieldsFromSelected()
@@ -669,176 +636,18 @@ public partial class DataItemsWizard : UserControl
         return false;
     }
 
-    private static string NormalizeConnectionType(string? type)
-    {
-        if (string.Equals(type, FabricType, StringComparison.OrdinalIgnoreCase))
-        {
-            return FabricType;
-        }
-
-        if (string.Equals(type, BlobType, StringComparison.OrdinalIgnoreCase))
-        {
-            return BlobType;
-        }
-
-        return SqlServerType;
-    }
-
-    private static string NormalizeAuthType(string? authType)
-    {
-        return string.Equals(authType, EntraAuthType, StringComparison.OrdinalIgnoreCase) ? EntraAuthType : "SQL Server";
-    }
-
     private async Task<List<FetchedItemOption>> FetchItemsForConnectionAsync(ConnectionItem connection, CancellationToken token)
     {
-        var type = NormalizeConnectionType(connection.Type);
-        return type switch
-        {
-            BlobType => await FetchBlobItemsAsync(connection, token),
-            FabricType => await FetchSqlItemsAsync(connection, fabricMode: true, token),
-            _ => await FetchSqlItemsAsync(connection, fabricMode: false, token)
-        };
-    }
-
-    private static async Task<List<FetchedItemOption>> FetchSqlItemsAsync(ConnectionItem connection, bool fabricMode, CancellationToken token)
-    {
-        string connectionString;
-        if (fabricMode)
-        {
-            if (string.IsNullOrWhiteSpace(connection.FabricConnectionString))
-            {
-                throw new InvalidOperationException("Fabric connection string is empty.");
-            }
-
-            connectionString = connection.FabricConnectionString;
-        }
-        else
-        {
-            if (string.IsNullOrWhiteSpace(connection.SqlServerName) || string.IsNullOrWhiteSpace(connection.SqlDatabase))
-            {
-                throw new InvalidOperationException("SQL connection is missing server or database.");
-            }
-
-            var builder = new SqlConnectionStringBuilder
-            {
-                DataSource = connection.SqlServerName,
-                InitialCatalog = connection.SqlDatabase,
-                Encrypt = true,
-                TrustServerCertificate = true,
-                ConnectTimeout = 12
-            };
-
-            if (NormalizeAuthType(connection.SqlAuthenticationType) == EntraAuthType)
-            {
-                builder.Authentication = SqlAuthenticationMethod.ActiveDirectoryDefault;
-            }
-            else
-            {
-                builder.UserID = connection.SqlUserName;
-                builder.Password = connection.SqlPassword;
-            }
-
-            connectionString = builder.ConnectionString;
-        }
-
-        var result = new List<FetchedItemOption>();
-        await using var sqlConnection = new SqlConnection(connectionString);
-        await sqlConnection.OpenAsync(token);
-        const string query = """
-            SELECT TABLE_SCHEMA + '.' + TABLE_NAME AS ItemName, TABLE_TYPE AS ItemType
-            FROM INFORMATION_SCHEMA.TABLES
-            ORDER BY TABLE_SCHEMA, TABLE_NAME
-            """;
-        await using var command = new SqlCommand(query, sqlConnection);
-        await using var reader = await command.ExecuteReaderAsync(token);
-        while (await reader.ReadAsync(token))
-        {
-            var name = reader.GetString(0);
-            var tableType = reader.GetString(1);
-            var kindSuffix = tableType.Equals("VIEW", StringComparison.OrdinalIgnoreCase) ? "view" : "table";
-            var kind = fabricMode ? $"fabric.{kindSuffix}" : $"sql.{kindSuffix}";
-            result.Add(new FetchedItemOption
-            {
-                Name = name,
-                Kind = kind,
-                ConnectionName = connection.Name
-            });
-        }
-
-        return result;
-    }
-
-    private static async Task<List<FetchedItemOption>> FetchBlobItemsAsync(ConnectionItem connection, CancellationToken token)
-    {
-        if (string.IsNullOrWhiteSpace(connection.BlobStorageAccount)
-            || string.IsNullOrWhiteSpace(connection.BlobContainer)
-            || string.IsNullOrWhiteSpace(connection.BlobAccessKey))
-        {
-            throw new InvalidOperationException("Blob connection is missing account/container/access key.");
-        }
-
-        var result = new List<FetchedItemOption>();
-        var connectionString = $"DefaultEndpointsProtocol=https;AccountName={connection.BlobStorageAccount};AccountKey={connection.BlobAccessKey};EndpointSuffix=core.windows.net";
-        var containerClient = new BlobContainerClient(connectionString, connection.BlobContainer);
-
-        var exists = await containerClient.ExistsAsync(token);
-        if (!exists.Value)
-        {
-            throw new InvalidOperationException("Blob container does not exist.");
-        }
-
-        var take = 0;
-        await foreach (var blob in containerClient.GetBlobsAsync(cancellationToken: token))
-        {
-            result.Add(new FetchedItemOption
-            {
-                Name = blob.Name,
-                Kind = "blob.file",
-                ConnectionName = connection.Name
-            });
-
-            take++;
-            if (take >= 250)
-            {
-                break;
-            }
-        }
-
-        return result;
+        return await _viewModel.FetchItemsForConnectionAsync(connection, token);
     }
 
     private string BuildUniqueName(string originalName)
     {
-        var seed = string.IsNullOrWhiteSpace(originalName) ? "Data Item" : originalName.Trim();
-        var candidate = $"{seed} Copy";
-        var suffix = 2;
-        while (_items.Any(item => item.ItemName.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
-        {
-            candidate = $"{seed} Copy {suffix}";
-            suffix++;
-        }
-
-        return candidate;
+        return _viewModel.BuildUniqueName(originalName);
     }
 
     private string EnsureUniqueName(string baseName, DataItemRecord? currentItem)
     {
-        var normalized = string.IsNullOrWhiteSpace(baseName) ? "Data Item" : baseName.Trim();
-        if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.ItemName.Equals(normalized, StringComparison.OrdinalIgnoreCase)))
-        {
-            return normalized;
-        }
-
-        var suffix = 2;
-        while (true)
-        {
-            var candidate = $"{normalized} ({suffix})";
-            if (!_items.Any(item => !ReferenceEquals(item, currentItem) && item.ItemName.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
-            {
-                return candidate;
-            }
-
-            suffix++;
-        }
+        return _viewModel.EnsureUniqueName(baseName, currentItem);
     }
 }
